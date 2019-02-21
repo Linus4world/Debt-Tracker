@@ -7,8 +7,12 @@ import { NavController } from 'ionic-angular';
 })
 export class HomePage {
 
-  constructor(public navCtrl: NavController) {
+  NAME: string = 'Julian';
+  CURRENCY: string = "€";
+  balance: number;
 
+  constructor(public navCtrl: NavController) {
+    this.balance = -50.32;
   }
 
 }

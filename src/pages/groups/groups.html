@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-navbar color="navbar">
+    <ion-title><b>Dept Tracker</b></ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="page-bg" padding>
+  <h1>All your groups at one look:</h1>
+  <dept-overview-card *ngFor="let g of group_list" [name]="g.name" 
+  [balance]="computeBalance(g.members, g.balances)" [moneypoolBalance]="g.moneypoolBalance"></dept-overview-card>
+  <ion-fab bottom right>
+    <button ion-fab >
+        <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-fab>
+
+</ion-content>

@@ -1,0 +1,31 @@
+<ion-card class="card">
+  <button ion-item no-padding no-margin>
+      <p *ngIf="this.moneypoolBalance != null" id="moneypool">{{moneypoolBalance.current}}/{{moneypoolBalance.initial}}{{this.currency}}</p>
+
+    <ion-card-header class="overall-header">
+      {{name}}
+    </ion-card-header>
+<ion-card-content>
+    <div *ngIf="balance < 0" class="flex-box">
+      <ion-icon name="alert" style="color: red" class="flex-center"></ion-icon>
+      <p class="flex-center balance-text">
+        You owe: {{balanceString}}
+      </p>
+    </div>
+
+    <div *ngIf="balance > 0" class="flex-box">
+        <ion-icon name="alert" style="color: orange" class="flex-center"></ion-icon>
+        <p class="flex-center balance-text">
+          You are owed: {{balanceString}}
+        </p>
+      </div>
+
+      <div *ngIf="balance == 0" class="flex-box">
+          <ion-icon name="checkmark-circle-outline" style="color: darkgreen" class="flex-center"></ion-icon>
+          <p class="flex-center balance-text">
+            You are quitt!
+          </p>
+        </div>
+  </ion-card-content>
+</button>
+</ion-card>

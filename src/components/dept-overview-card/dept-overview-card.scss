@@ -1,0 +1,39 @@
+dept-overview-card {
+    .card{
+        border-radius: 1%;
+    }  
+    
+    .item-inner, .label{
+        margin: 0 !important;
+    }
+
+    ion-icon{
+        float: left;
+        margin-right: 10px;
+        font-size: 40px;
+    }
+
+    .flex-center{
+        align-self: center;
+    }
+
+    .flex-box{
+        display: flex;
+    }
+
+    .overall-header{
+        font-size: 0.8em;
+        color:gray;
+    }
+
+    .balance-text{
+        font-size: 1.4em;
+    }
+
+    #moneypool{
+        float:right;
+        font-size: 1.7em;
+
+    }
+
+}
