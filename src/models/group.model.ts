@@ -1,6 +1,7 @@
 export interface Group{
+    id: string,
     name: string,
-    members: string[],
-    balances: number[],
+    members: Map<string,string>,
+    balances: Map<string, number>,
     moneypoolBalance?: {current: number, initial: number}
 }

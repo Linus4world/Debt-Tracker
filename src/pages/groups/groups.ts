@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Group } from '../../models/group.model';
+import { AccountProvider } from '../../providers/account/account';
 
 @IonicPage()
 @Component({
@@ -8,12 +9,48 @@ import { Group } from '../../models/group.model';
   templateUrl: 'groups.html',
 })
 export class GroupsPage {
-  g1: Group = {name: 'Trip', members: ['Linus', 'Julian'], balances: [32.30, -32.30]};
-  g2: Group = {name: 'Birthday party', members: ['Linus', 'Mikael', 'Valentina'], balances: [-20.00, 45.30, -25.30]};
-  g3: Group = {name: 'Pool_1', members: ['Linus', 'Elmo', 'Kyra', 'Sixtine'], balances: [0,0,0,-12.45], moneypoolBalance: {current: 47.55,initial:60}};
+  private self;
+
+  //Members
+  m1: Map<string,string> = new Map<string,string>();
+  m2: Map<string,string> = new Map<string,string>();
+  m3: Map<string,string> = new Map<string,string>();
+  //Balances
+  b1: Map<string,number> = new Map<string, number>();
+  b2: Map<string,number> = new Map<string, number>();
+  b3: Map<string,number> = new Map<string, number>();
+  //Groups
+  g1: Group = {id: "000000", name: 'Trip', members: this.m1, balances: this.b1};
+  g2: Group = {id: "000001", name: 'Birthday party', members: this.m2, balances: this.b2};
+  g3: Group = {id: "000010", name: 'Pool_1', members: this.m3, balances: this.b3, moneypoolBalance: {current: 47.55,initial:60}};
   group_list: Group[] = [this.g1, this.g2, this.g3];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public account: AccountProvider) {
+    this.self = account.getSelf();
+    this.m1.set(this.self.ADRESS, this.self.name);
+    this.m1.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA5', 'Julian');
+
+    this.m2.set(this.self.ADRESS, this.self.name);
+    this.m2.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA6', 'Mikael');
+    this.m2.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA7', 'Valentina');
+
+    this.m3.set(this.self.ADRESS, this.self.name);
+    this.m3.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA8', 'Elmo');
+    this.m3.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA9', 'Kyra');
+    this.m3.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA0', 'Sixtine');
+
+
+    this.b1.set(this.self.ADRESS, 32.30);
+    this.b1.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA5', -32.30);
+
+    this.b2.set(this.self.ADRESS, -20.00);
+    this.b2.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA6', 45.30);
+    this.b2.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA7', -25.30);
+
+    this.b2.set(this.self.ADRESS, 0);
+    this.b2.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA8', 0);
+    this.b2.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA9', 0);
+    this.b2.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA0', -12.45);
   }
 
   ionViewDidLoad() {
@@ -24,8 +61,8 @@ export class GroupsPage {
    * @param mambers list of members in the group
    * @param balances list of balances in the group
    */
-  computeBalance(mambers: String[], balances: number[]): number{
-    return balances[0];
+  getOwnBalance(balances: Map<string,number>): number{
+    return balances.get(this.self.ADRESS);
   }
 
   /**
@@ -34,7 +71,7 @@ export class GroupsPage {
   getOverallBalance(){
     let overAllBalance = 0;
     for(let g of this.group_list){
-      overAllBalance += this.computeBalance(g.members, g.balances);
+      overAllBalance += this.getOwnBalance(g.balances);
     }
     return overAllBalance;
   }
