@@ -13,6 +13,7 @@ import { FriendsPage } from '../pages/friends/friends';
 import { DeptOverviewCardComponent } from '../components/dept-overview-card/dept-overview-card';
 import { CurrencyProvider } from '../providers/currency/currency';
 import { HttpClientModule } from '@angular/common/http';
+import { AccountProvider } from '../providers/account/account';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { HttpClientModule } from '@angular/common/http';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     CurrencyProvider,
+    AccountProvider
   ]
 })
 export class AppModule {}

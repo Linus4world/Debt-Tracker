@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { AccountProvider } from '../../providers/account/account';
 
 @Component({
   selector: 'page-home',
@@ -7,11 +8,12 @@ import { NavController } from 'ionic-angular';
 })
 export class HomePage {
 
-  NAME: string = 'Julian';
+  NAME: string = 'Unknown';
   CURRENCY: string = "€";
   balance: number;
 
-  constructor(public navCtrl: NavController) {
+  constructor(public navCtrl: NavController, private account: AccountProvider) {
+    this.NAME = account.getName();
     this.balance = -50.32;
   }
 
