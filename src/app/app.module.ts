@@ -1,6 +1,6 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { IonicApp, IonicModule, IonicErrorHandler, Platform } from 'ionic-angular';
+import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
 import { HomePage } from '../pages/home/home';
@@ -14,6 +14,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { AccountProvider } from '../providers/account/account';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { GroupcreationPage } from '../pages/groupcreation/groupcreation';
+import { FilemanagerProvider } from '../providers/filemanager/filemanager';
+import { File } from '@ionic-native/file/ngx';
 
 @NgModule({
   declarations: [
@@ -22,6 +25,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
     HomePage,
     TabsPage,
     GroupsPage,
+    GroupcreationPage,
     DeptOverviewCardComponent
   ],
   imports: [
@@ -35,14 +39,17 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
     FriendsPage,
     HomePage,
     TabsPage,
-    GroupsPage
+    GroupsPage,
+    GroupcreationPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     CurrencyProvider,
-    AccountProvider
+    AccountProvider,
+    FilemanagerProvider,
+    File
   ]
 })
 export class AppModule {}

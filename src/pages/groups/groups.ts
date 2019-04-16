@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
+import { GroupcreationPage } from '../groupcreation/groupcreation';
+import { FilemanagerProvider } from '../../providers/filemanager/filemanager';
 
 @IonicPage()
 @Component({
@@ -20,12 +22,13 @@ export class GroupsPage {
   b2: Map<string,number> = new Map<string, number>();
   b3: Map<string,number> = new Map<string, number>();
   //Groups
-  g1: Group = {id: "000000", name: 'Trip', members: this.m1, balances: this.b1};
-  g2: Group = {id: "000001", name: 'Birthday party', members: this.m2, balances: this.b2};
-  g3: Group = {id: "000010", name: 'Pool_1', members: this.m3, balances: this.b3, moneypoolBalance: {current: 47.55,initial:60}};
-  group_list: Group[] = [this.g1, this.g2, this.g3];
+  g1: Group = {id: "0", name: 'Trip', members: this.m1, balances: this.b1};
+  g2: Group = {id: "1", name: 'Birthday party', members: this.m2, balances: this.b2};
+  g3: Group = {id: "2", name: 'Pool_1', members: this.m3, balances: this.b3, moneypoolBalance: {current: 47.55,initial:60}};
+  public group_list: Group[] = [this.g1, this.g2, this.g3];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public account: AccountProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+     public account: AccountProvider, public fileManager: FilemanagerProvider) {
     this.self = account.getSelf();
     this.m1.set(this.self.ADRESS, this.self.name);
     this.m1.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA5', 'Julian');
@@ -74,6 +77,18 @@ export class GroupsPage {
       overAllBalance += this.getOwnBalance(g.balances);
     }
     return overAllBalance;
+  }
+
+  createGroup(){
+    //TODO
+    console.log("Creating Page...");
+    this.navCtrl.push(GroupcreationPage, {groupPage: this});
+  }
+
+  addGroup(group: Group){
+    this.group_list.push(group);
+    console.log('Added group!');
+    this.fileManager.saveGroups(this.group_list);
   }
 
 }

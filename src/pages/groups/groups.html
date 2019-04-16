@@ -9,7 +9,7 @@
   <dept-overview-card *ngFor="let g of group_list" [name]="g.name" 
   [balance]="getOwnBalance(g.balances)" [moneypoolBalance]="g.moneypoolBalance"></dept-overview-card>
   <ion-fab bottom right>
-    <button ion-fab >
+    <button ion-fab (click)="createGroup()">
         <ion-icon name="add"></ion-icon>
     </button>
   </ion-fab>
