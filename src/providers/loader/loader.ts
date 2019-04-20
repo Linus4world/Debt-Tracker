@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { FilemanagerProvider } from '../filemanager/filemanager';
 import { Group } from '../../models/group.model';
 import { AccountProvider } from '../account/account';
-import { Observable, observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 /*
   Generated class for the LoaderProvider provider.
@@ -23,9 +23,9 @@ export class LoaderProvider {
   private group_list: Group[];
   private friend_list: Group[];
 
-  public overAllBalance$: Observable<string>;
+  public overAllBalance$: Observable<number>;
   private observer;
-  private overAllBalance = "Calculating...";
+  private overAllBalance = 0;
 
   constructor(public http: HttpClient, public filemanager: FilemanagerProvider, account: AccountProvider) {
     this.self = account.getSelf();
@@ -77,8 +77,10 @@ export class LoaderProvider {
   }
 
   public updateBalance(){
-    this.overAllBalance = this.getOverallBalance().toFixed(2);
-    this.observer.next(this.overAllBalance);
+    this.overAllBalance = this.getOverallBalance();
+    if(this.observer !== undefined){
+      this.observer.next(this.overAllBalance);
+    }
   }
 
   private loadGroups(){

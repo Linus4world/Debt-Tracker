@@ -22,14 +22,6 @@ export class GroupsPage {
   ionViewDidLoad() {
   }
 
-  /**
-   * Returns the users balance in the group
-   * @param balances list of balances in the group
-   */
-  getOwnBalance(balances: Map<string,number>): number{
-    return balances.get(this.account.getAdress());
-  }
-
   createGroup(){
     this.navCtrl.push(GroupcreationPage, {groupPage: this});
   }

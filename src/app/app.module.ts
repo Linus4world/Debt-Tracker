@@ -19,6 +19,9 @@ import { FilemanagerProvider } from '../providers/filemanager/filemanager';
 import { File } from '@ionic-native/file/ngx';
 import { FriendcreationPage } from '../pages/friendcreation/friendcreation';
 import { LoaderProvider } from '../providers/loader/loader';
+import { GroupdetailPage } from '../pages/groupdetail/groupdetail';
+import { AddmemberPage } from '../pages/addmember/addmember';
+import { AddtransactionPage } from '../pages/addtransaction/addtransaction';
 
 @NgModule({
   declarations: [
@@ -29,7 +32,10 @@ import { LoaderProvider } from '../providers/loader/loader';
     GroupsPage,
     GroupcreationPage,
     DeptOverviewCardComponent,
-    FriendcreationPage
+    FriendcreationPage,
+    GroupdetailPage,
+    AddmemberPage,
+    AddtransactionPage
   ],
   imports: [
     BrowserModule,
@@ -44,7 +50,10 @@ import { LoaderProvider } from '../providers/loader/loader';
     TabsPage,
     GroupsPage,
     GroupcreationPage,
-    FriendcreationPage
+    FriendcreationPage,
+    GroupdetailPage,
+    AddmemberPage,
+    AddtransactionPage
   ],
   providers: [
     StatusBar,
@@ -54,7 +63,7 @@ import { LoaderProvider } from '../providers/loader/loader';
     AccountProvider,
     FilemanagerProvider,
     File,
-    LoaderProvider
+    LoaderProvider,
   ]
 })
 export class AppModule {}

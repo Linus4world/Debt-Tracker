@@ -6,8 +6,7 @@
 
 <ion-content class="page-bg" padding>
   <h1>All your groups at one look:</h1>
-  <dept-overview-card *ngFor="let g of group_list" [name]="g.name" 
-  [balance]="getOwnBalance(g.balances)"></dept-overview-card>
+  <dept-overview-card *ngFor="let g of group_list" [group]="g" [clickable]="true"></dept-overview-card>
   <ion-fab bottom right>
     <button ion-fab (click)="createGroup()">
         <ion-icon name="add"></ion-icon>
