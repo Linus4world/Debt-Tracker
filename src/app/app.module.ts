@@ -17,6 +17,9 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { GroupcreationPage } from '../pages/groupcreation/groupcreation';
 import { FilemanagerProvider } from '../providers/filemanager/filemanager';
 import { File } from '@ionic-native/file/ngx';
+import { FriendcreationPage } from '../pages/friendcreation/friendcreation';
+import { BalanceProvider } from '../providers/balance/balance';
+import { LoaderProvider } from '../providers/loader/loader';
 
 @NgModule({
   declarations: [
@@ -26,7 +29,8 @@ import { File } from '@ionic-native/file/ngx';
     TabsPage,
     GroupsPage,
     GroupcreationPage,
-    DeptOverviewCardComponent
+    DeptOverviewCardComponent,
+    FriendcreationPage
   ],
   imports: [
     BrowserModule,
@@ -40,7 +44,8 @@ import { File } from '@ionic-native/file/ngx';
     HomePage,
     TabsPage,
     GroupsPage,
-    GroupcreationPage
+    GroupcreationPage,
+    FriendcreationPage
   ],
   providers: [
     StatusBar,
@@ -49,7 +54,8 @@ import { File } from '@ionic-native/file/ngx';
     CurrencyProvider,
     AccountProvider,
     FilemanagerProvider,
-    File
+    File,
+    LoaderProvider
   ]
 })
 export class AppModule {}

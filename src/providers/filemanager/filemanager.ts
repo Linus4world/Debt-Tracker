@@ -25,8 +25,8 @@ export class FilemanagerProvider {
     this.writeFile(this.GROUP_FILE_NAME, JSON.stringify(groups));
   }
 
-  public loadGroups(){
-    return this.readObjectsFromFile(this.GROUP_FILE_NAME);
+  public loadGroups(): Promise<Group[]>{
+    return this.readGroupObjectsFromFile(this.GROUP_FILE_NAME);
   }
 
   public saveFriends(friends: Group[]){
@@ -34,14 +34,14 @@ export class FilemanagerProvider {
   }
 
   public loadFriends(){
-    return this.readObjectsFromFile(this.FRIENDS_FILE_NAME);
+    return this.readGroupObjectsFromFile(this.FRIENDS_FILE_NAME);
   }
   public saveTimestamps(timestamps: Timestamp[]){
     this.writeFile(this.TIMESTAMPS_FILE_NAME, JSON.stringify(timestamps));
   }
 
   public loadTimeStamps(){
-    return this.readObjectsFromFile(this.TIMESTAMPS_FILE_NAME);
+    return this.readTimeStampObjectsFromFile(this.TIMESTAMPS_FILE_NAME);
   }
 
   /**
@@ -49,10 +49,33 @@ export class FilemanagerProvider {
    * in the object or an error log.
    * @param fileName name of the file containing the JSON data
    */
-  private readObjectsFromFile(fileName : string){
-    return this.readFile(fileName
-      ).then(content => {return JSON.parse(''+content)}
-      ).catch(err => console.log('Object data currupted!'));
+  private readGroupObjectsFromFile(fileName : string): Promise<Group[]>{
+    return new Promise((res, rej) => {
+      this.readFile(fileName
+        ).then((content) => {
+          res(JSON.parse(''+content));
+        }, (err) => {
+          console.log(err);
+          rej(null);
+        })
+    }) 
+  }
+
+  /**
+   * Parses a JSON file into an Object and returns a Promise reloving in either
+   * in the object or an error log.
+   * @param fileName name of the file containing the JSON data
+   */
+  private readTimeStampObjectsFromFile(fileName : string): Promise<Timestamp[]>{
+    return new Promise((res, rej) => {
+      this.readFile(fileName
+        ).then((content) => {
+          res(JSON.parse(''+content));
+        }, (err) => {
+          console.log(err);
+          rej(null);
+        })
+    }) 
   }
 
   /**
@@ -60,9 +83,13 @@ export class FilemanagerProvider {
    * @param fileName name of the target file
    */
   private readFile(fileName: string): Promise<string | void>{
-    return this.file.readAsText(this.file.dataDirectory, fileName
-        ).then(content => {return content;}
-          ).catch(err => console.log('Could not read '+ fileName + '! Err: ' + err));
+    return new Promise((res, rej) => {
+      if( this.file.readAsText(this.file.dataDirectory, fileName) === undefined){
+        rej("Could not read File! Are you running the app on a real device?");
+      }else{
+        res(this.file.readAsText(this.file.dataDirectory, fileName));
+      }
+    })
   }
 
 
