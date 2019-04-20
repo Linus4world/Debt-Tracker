@@ -6,9 +6,6 @@
       </b>
     </ion-card-header>
 
-    <p *ngIf="this.moneypoolBalance != null" id="moneypool">
-      {{moneypoolBalance.current}}/{{moneypoolBalance.initial}}{{this.currency}}</p>
-
     <ion-card-content>
       <div *ngIf="balance < 0" class="flex-box">
         <ion-icon name="alert" style="color: red" class="flex-center"></ion-icon>

@@ -13,7 +13,6 @@ import { Currency } from '../../models/enums';
 export class DeptOverviewCardComponent {
   @Input() name: string = '';
   @Input() balance: number = 0.00;
-  @Input() moneypoolBalance: {current: number, initial: number};
   balanceString: string;  
   currency: Currency;
 
@@ -24,7 +23,9 @@ export class DeptOverviewCardComponent {
 
   ngOnChanges(changes: SimpleChanges) {
     this.balance = changes.balance.currentValue;
-    this.name = changes.name.currentValue;
+    if(changes.name !== undefined){
+      this.name = changes.name.currentValue;
+    }
     this.setBalanceString();
   }
 

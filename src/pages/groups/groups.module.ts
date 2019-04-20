@@ -11,7 +11,7 @@ import { DeptOverviewCardComponent } from '../../components/dept-overview-card/d
   imports: [
     IonicPageModule.forChild(GroupsPage),
     IonicModule,
-    DeptOverviewCardComponent
+    DeptOverviewCardComponent,
   ],
 })
 export class GroupsPageModule {}

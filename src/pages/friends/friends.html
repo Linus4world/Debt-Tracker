@@ -15,7 +15,7 @@
   <dept-overview-card *ngFor="let f of friend_list" [name]="f.name" [balance]="getOwnBalance(f.balances)"></dept-overview-card>
 
   <ion-fab bottom right>
-    <button ion-fab >
+    <button ion-fab (click)="createFriend()">
         <ion-icon name="add"></ion-icon>
     </button>
   </ion-fab>

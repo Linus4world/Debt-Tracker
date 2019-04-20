@@ -6,14 +6,20 @@ import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 
-import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
 import { GroupsPage } from '../pages/groups/groups';
 import { FriendsPage } from '../pages/friends/friends';
 import { DeptOverviewCardComponent } from '../components/dept-overview-card/dept-overview-card';
 import { CurrencyProvider } from '../providers/currency/currency';
 import { HttpClientModule } from '@angular/common/http';
 import { AccountProvider } from '../providers/account/account';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { GroupcreationPage } from '../pages/groupcreation/groupcreation';
+import { FilemanagerProvider } from '../providers/filemanager/filemanager';
+import { File } from '@ionic-native/file/ngx';
+import { FriendcreationPage } from '../pages/friendcreation/friendcreation';
+import { BalanceProvider } from '../providers/balance/balance';
+import { LoaderProvider } from '../providers/loader/loader';
 
 @NgModule({
   declarations: [
@@ -22,7 +28,9 @@ import { AccountProvider } from '../providers/account/account';
     HomePage,
     TabsPage,
     GroupsPage,
-    DeptOverviewCardComponent
+    GroupcreationPage,
+    DeptOverviewCardComponent,
+    FriendcreationPage
   ],
   imports: [
     BrowserModule,
@@ -35,14 +43,19 @@ import { AccountProvider } from '../providers/account/account';
     FriendsPage,
     HomePage,
     TabsPage,
-    GroupsPage
+    GroupsPage,
+    GroupcreationPage,
+    FriendcreationPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     CurrencyProvider,
-    AccountProvider
+    AccountProvider,
+    FilemanagerProvider,
+    File,
+    LoaderProvider
   ]
 })
 export class AppModule {}
