@@ -4,7 +4,6 @@ import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
 import { FriendcreationPage } from '../friendcreation/friendcreation';
 import { FilemanagerProvider } from '../../providers/filemanager/filemanager';
-import { BalanceProvider } from '../../providers/balance/balance';
 import { LoaderProvider } from '../../providers/loader/loader';
 
 /**

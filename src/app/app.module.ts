@@ -18,7 +18,6 @@ import { GroupcreationPage } from '../pages/groupcreation/groupcreation';
 import { FilemanagerProvider } from '../providers/filemanager/filemanager';
 import { File } from '@ionic-native/file/ngx';
 import { FriendcreationPage } from '../pages/friendcreation/friendcreation';
-import { BalanceProvider } from '../providers/balance/balance';
 import { LoaderProvider } from '../providers/loader/loader';
 
 @NgModule({
