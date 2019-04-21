@@ -2,6 +2,7 @@ import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
+import { IonicStorageModule } from '@ionic/storage';
 
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
@@ -15,13 +16,13 @@ import { AccountProvider } from '../providers/account/account';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { GroupcreationPage } from '../pages/groupcreation/groupcreation';
-import { FilemanagerProvider } from '../providers/filemanager/filemanager';
 import { File } from '@ionic-native/file/ngx';
 import { FriendcreationPage } from '../pages/friendcreation/friendcreation';
 import { LoaderProvider } from '../providers/loader/loader';
 import { GroupdetailPage } from '../pages/groupdetail/groupdetail';
 import { AddmemberPage } from '../pages/addmember/addmember';
 import { AddtransactionPage } from '../pages/addtransaction/addtransaction';
+import { RegisterPage } from '../pages/register/register';
 
 @NgModule({
   declarations: [
@@ -35,12 +36,14 @@ import { AddtransactionPage } from '../pages/addtransaction/addtransaction';
     FriendcreationPage,
     GroupdetailPage,
     AddmemberPage,
-    AddtransactionPage
+    AddtransactionPage,
+    RegisterPage
   ],
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
-    HttpClientModule
+    HttpClientModule,
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -53,7 +56,8 @@ import { AddtransactionPage } from '../pages/addtransaction/addtransaction';
     FriendcreationPage,
     GroupdetailPage,
     AddmemberPage,
-    AddtransactionPage
+    AddtransactionPage,
+    RegisterPage
   ],
   providers: [
     StatusBar,
@@ -61,7 +65,6 @@ import { AddtransactionPage } from '../pages/addtransaction/addtransaction';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     CurrencyProvider,
     AccountProvider,
-    FilemanagerProvider,
     File,
     LoaderProvider,
   ]
