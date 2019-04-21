@@ -1,6 +1,9 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
 import { CurrencyProvider } from '../../providers/currency/currency';
-import { Currency } from '../../models/enums';
+import { NavController } from 'ionic-angular';
+import { GroupdetailPage } from '../../pages/groupdetail/groupdetail';
+import { Group } from '../../models/group.model';
+import { AccountProvider } from '../../providers/account/account';
 
 /**
  * The component displays the user's current balance in that group.
@@ -11,26 +14,38 @@ import { Currency } from '../../models/enums';
 })
 
 export class DeptOverviewCardComponent {
-  @Input() name: string = '';
-  @Input() balance: number = 0.00;
+  @Input() group: Group = {id: "", name: "...", members: null, balances: null};
+  @Input() clickable: boolean = true;
   balanceString: string;  
-  currency: Currency;
 
-  constructor( public currencyProvider: CurrencyProvider) {
+  constructor( public currencyProvider: CurrencyProvider, public navCtrl: NavController,
+    public account: AccountProvider) {
     this.setBalanceString();
-    this.currency = currencyProvider.currency
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.balance = changes.balance.currentValue;
-    if(changes.name !== undefined){
-      this.name = changes.name.currentValue;
-    }
+    this.group = changes.group.currentValue;
     this.setBalanceString();
   }
 
   private setBalanceString(){
-    this.balanceString = (Math.abs(this.balance))+this.currency;
+    this.balanceString = (Math.abs(this.getOwnBalance())).toFixed(2)+this.currencyProvider.currency;
+  }
+
+    /**
+   * Returns the users balance in the group
+   */
+  getOwnBalance(): number{
+    if(this.group === undefined || this.group.balances === null){
+      return 0;
+    }
+    return this.group.balances.get(this.account.getAdress());
+  }
+
+  showGroupDetails(){
+    if(this.clickable){
+      this.navCtrl.push(GroupdetailPage, {group: this.group});
+    }
   }
 
 }

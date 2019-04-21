@@ -3,8 +3,6 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
 import { FriendcreationPage } from '../friendcreation/friendcreation';
-import { FilemanagerProvider } from '../../providers/filemanager/filemanager';
-import { BalanceProvider } from '../../providers/balance/balance';
 import { LoaderProvider } from '../../providers/loader/loader';
 
 /**
@@ -23,7 +21,7 @@ export class FriendsPage {
   friend_list: Group[];
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-     public account: AccountProvider, public fileManager: FilemanagerProvider, loader: LoaderProvider) {
+     public account: AccountProvider, public loader: LoaderProvider) {
       this.friend_list = loader.getFriends();
     }
 
@@ -37,7 +35,7 @@ export class FriendsPage {
   public addFriend(friend: Group){
     this.friend_list.push(friend);
     console.log('Added friend!');
-    this.fileManager.saveFriends(this.friend_list);
+    this.loader.saveFriends(this.friend_list);
   }
 
   createFriend(){
