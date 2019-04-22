@@ -15,8 +15,17 @@ import { AccountProvider } from '../account/account';
 @Injectable()
 export class LoaderProvider {
 
-  private groups: Array<Group>;
-  private friends: Array<Group>;
+  /**
+   * If true, example groups and friends will be loaded
+   */
+  private useMockData: boolean = true;
+  /**
+   * If true, data gets stored on the phone/computer persistently
+   */
+  private storeData: boolean = false;
+
+  private groups: Array<Group> = [];
+  private friends: Array<Group> = [];
 
 
   private self: AccountDetails;
@@ -31,6 +40,7 @@ export class LoaderProvider {
 
   private GROUPS_KEY = 'GROUPS';
   private FIRENDS_KEY = 'FRIENDS';
+  private ACCOUNT_KEY = 'ACCOUNT';
 
   constructor(public http: HttpClient,
     public storage: Storage, public account: AccountProvider) {
@@ -40,20 +50,22 @@ export class LoaderProvider {
   public init() {
     console.log("start to load files....")
     this.self = this.account.getSelf();
-    this.setupGroupsMock();
-    this.setupFriendsMock();
+    if (this.useMockData) {
+      this.setupGroupsMock();
+      this.setupFriendsMock();
+    }
     return Promise.all([this.loadGroups(), this.loadFriends()]).then((values) =>
       this.updateBalance()).then(() => {
         this.overAllBalance$ = Observable.create((observer) => {
-        this.observer = observer;
-        observer.next(this.overAllBalance);
-      });
-    }).then(() => console.log('Everything is loaded!'));
+          this.observer = observer;
+          observer.next(this.overAllBalance);
+        });
+      }).then(() => console.log('Everything is loaded!'));
   }
 
 
   public getGroups() {
-    if (this.groups !== undefined) {
+    if (this.groups !== []) {
       return this.groups;
     } else {
       this.loadGroups();
@@ -62,7 +74,7 @@ export class LoaderProvider {
   }
 
   public getFriends() {
-    if (this.friends !== undefined) {
+    if (this.friends !== []) {
       return this.friends
     } else {
       this.loadFriends();
@@ -70,21 +82,6 @@ export class LoaderProvider {
     }
   }
 
-  // public getAccount(): Promise<AccountDetails> {
-  //   return new Promise((res) => {
-  //     if (this.self !== undefined) {
-  //       res(this.self);
-  //     }else{
-  //       this.loadAccount().then(()=>{
-  //         res(this.self);
-  //       });
-  //     }
-  //   });
-  // }
-
-  /**
- * Returns the users overall balance in all groups
- */
   private getOverallBalance() {
     let overAllBalance = 0;
     for (let g of this.groups) {
@@ -111,50 +108,31 @@ export class LoaderProvider {
     return this.storage.get(this.GROUPS_KEY).then((groups) => {
       if (groups !== null) {
         this.groups = JSON.parse(groups);
-      } else {
+      } else if (this.useMockData) {
         console.log("using mocks for groups...");
         this.groups = this.groups_mock;
       }
-    }, (err) => {
-      console.log("ERROR! Using mocks for groups...");
-      this.groups = this.groups_mock;
     });
   }
 
   private loadFriends() {
     console.log('Loading Friends...');
     return this.storage.get(this.FIRENDS_KEY).then((friends) => {
-      if (friends === null) {
+      if (friends !== null) {
+        this.friends = JSON.parse(friends);
+      } else if (this.useMockData) {
         console.log("Using mocks for friends...");
         this.friends = this.friends_mock;
-      } else {
-        this.friends = JSON.parse(friends);
       }
-    }, (err) => {
-      console.log("ERROR! Using mocks for friends...");
-      this.friends = this.friends_mock;
-    })
+    });
   }
-
-  // private loadAccount() {
-  //   console.log('Loading Account...');
-  //   return this.storage.get(this.ACCOUNT_KEY).then((acc) => {
-  //     if(acc === null){
-  //       console.log("using mock for account...");
-  //       this.self = this.self_mock;
-  //     }else{
-  //       this.self = JSON.parse(acc);
-  //     }
-  //   }, (err) => {
-  //     console.log("ERROR! Using mock for account...");
-  //     this.self = this.self_mock;
-  //     console.log(this.self)
-  //   })
-  // }
 
 
   //STORING
 
+  public saveAccount(account: AccountDetails) {
+    this.saveObjects(this.ACCOUNT_KEY, account);
+  }
 
   public saveGroups(groups: Group[]) {
     this.saveObjects(this.GROUPS_KEY, groups);
@@ -165,30 +143,18 @@ export class LoaderProvider {
   }
 
   private saveObjects(key: string, obj: any) {
-    this.storage.set(key, JSON.stringify(obj)).then(() => {
-      console.log('Stored groups, successfully!')
-    }, (err) => {
-      console.log('ERROR writing ' + key + ' ' + err);
-    })
+    if (this.storeData) {
+      this.storage.set(key, JSON.stringify(obj)).then(() => {
+        console.log('Stored ' + key + ' successfully!')
+      }, (err) => {
+        console.log('ERROR writing ' + key + ' ' + err);
+      })
+    }
   }
 
 
 
-
-
-
-
-
-
   //MOCKS
-
-  // private setupAccountMock() {
-  //   this.self_mock = {
-  //     name: 'Linus', ADRESS: 'TAWLSI7TPPXTTPVMCCZRCD2YAFXAY6IB2UH7BQ5Q',
-  //     PUBLIC_KEY: '2189cec45b3d9659178ad697891c2b19a4f88a7d4355759af4e553fe57b6ce92',
-  //     PRIVATE_KEY: '945ef5e3111f78334bac11cfb9ea0adde38d40844edc2315bf1cb82a96744075'
-  //   }
-  // }
 
   private setupFriendsMock() {
     let m1: Map<string, string> = new Map<string, string>();

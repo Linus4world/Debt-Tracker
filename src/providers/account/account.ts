@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AccountDetails } from '../../models/accountdetails.model';
+import { LoaderProvider } from '../loader/loader';
 
 @Injectable()
 export class AccountProvider {
@@ -13,16 +14,12 @@ export class AccountProvider {
         console.log('Hello AccountProvider Provider');
     }
 
-    private loadAccountDetails() {
-        //TODO
-        this.setAccountDetails('Linus', 'TAWLSI7TPPXTTPVMCCZRCD2YAFXAY6IB2UH7BQ5Q',
-            '2189cec45b3d9659178ad697891c2b19a4f88a7d4355759af4e553fe57b6ce92',
-            '945ef5e3111f78334bac11cfb9ea0adde38d40844edc2315bf1cb82a96744075');
-    }
-
-    private setAccount(acc: AccountDetails){
-        this.setAccountDetails(acc.name, acc.ADRESS, acc.PUBLIC_KEY, acc.PRIVATE_KEY);
-    }
+    // private loadAccountDetails() {
+    //     //TODO
+    //     this.setAccountDetails('Linus', 'TAWLSI7TPPXTTPVMCCZRCD2YAFXAY6IB2UH7BQ5Q',
+    //         '2189cec45b3d9659178ad697891c2b19a4f88a7d4355759af4e553fe57b6ce92',
+    //         '945ef5e3111f78334bac11cfb9ea0adde38d40844edc2315bf1cb82a96744075');
+    // }
 
     public setAccountDetails(name: string, adress: string, public_key: string, private_key: string) {
         return new Promise((res, rej) => {

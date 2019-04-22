@@ -23,6 +23,7 @@ import { GroupdetailPage } from '../pages/groupdetail/groupdetail';
 import { AddmemberPage } from '../pages/addmember/addmember';
 import { AddtransactionPage } from '../pages/addtransaction/addtransaction';
 import { RegisterPage } from '../pages/register/register';
+import { NemTransactionProvider } from '../providers/nem/transaction';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { RegisterPage } from '../pages/register/register';
     AccountProvider,
     File,
     LoaderProvider,
+    NemTransactionProvider,
   ]
 })
 export class AppModule {}

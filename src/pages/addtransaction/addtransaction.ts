@@ -1,13 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Group } from '../../models/group.model';
-
-/**
- * Generated class for the AddtransactionPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { NemTransactionProvider } from '../../providers/nem/transaction';
 
 @IonicPage()
 @Component({
@@ -21,12 +15,8 @@ export class AddtransactionPage {
   memberAddress:string = "";
   members: Array<string> = new Array<string>();
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public nemTransaction: NemTransactionProvider) {
     this.group = navParams.data;
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad AddtransactionPage');
   }
 
   addMember(){
@@ -37,23 +27,23 @@ export class AddtransactionPage {
   }
 
   checkInput(): boolean{
-    return !(this.title === "" || this.members.length <= 1 || this.amount === null || this.amount === 0);
+    return !(this.title === "" || this.members.length < 1 || this.amount === null || this.amount === 0);
   }
 
   submit(){
     if(this.checkInput()){
-      this.createTransAction();
+      this.createTransaction();
       this.navCtrl.pop();
     }else{
       //TODO inform user
       console.log('NO')
     }
-    
   }
 
-  createTransAction(){
-    //TODO
-    console.log("Transaction done!");
+  private createTransaction(){
+    this.nemTransaction.createTransAction(this.members, this.title, this.amount);
   }
+
+
 
 }

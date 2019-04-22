@@ -26,11 +26,6 @@ export class GroupdetailPage {
     public currency: CurrencyProvider) {
      this.group = navParams.get("group");
      this.members = Array.from(this.group.members.keys());
-     console.log(this.members);
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad GroupdetailPage');
   }
 
   getMemberBalance(memberAdress: string){
