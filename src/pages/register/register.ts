@@ -62,7 +62,8 @@ export class RegisterPage {
    */
   private createAccount() {
     let acc = Account.generateNewAccount(NetworkType.MIJIN_TEST);
-    this.account.setAccountDetails(this.userName, acc.address.plain(), acc.publicKey, acc.privateKey)
+    this.account.setAccountDetails(this.userName, acc.address.plain(),
+     acc.publicKey, acc.privateKey).then(() => this.loader.saveAccount(this.account.getSelf()));
   }
 
   private goToNextPage() {
