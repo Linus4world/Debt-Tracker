@@ -7,6 +7,7 @@ import { AccountDetails } from '../../models/accountdetails.model';
 import { AccountProvider } from '../account/account';
 import { NemMonitorProvider } from '../nem/monitor';
 import { TransferTransaction, Address, UInt64, Transaction } from 'nem2-sdk';
+import { GroupStorage } from '../../models/groupstorage';
 
 
 @Injectable()
@@ -15,11 +16,11 @@ export class LoaderProvider {
   /**
    * If true, example groups and friends will be loaded
    */
-  private readonly useMockData: boolean = true;
+  private readonly useMockData: boolean = false;
   /**
    * If true, data gets stored on the phone/computer persistently
    */
-  private readonly storeData: boolean = false;
+  private readonly storeData: boolean = true;
 
   private groups: Array<Group> = [];
   private friends: Array<Group> = [];
@@ -79,8 +80,8 @@ export class LoaderProvider {
       return this.friends;
     }
   }
-  
-  public getLatestTransactions(): Transaction[]{
+
+  public getLatestTransactions(): Transaction[] {
     return this.latestTransactions;
   }
 
@@ -165,9 +166,12 @@ export class LoaderProvider {
 
   private loadGroups() {
     console.log('Loading Groups...');
-    return this.storage.get(this.GROUPS_KEY).then((groups) => {
-      if (groups !== null) {
-        this.groups = JSON.parse(groups);
+    return this.storage.get(this.GROUPS_KEY).then((data) => {
+      if (data !== null) {
+        let storageGroups: GroupStorage[] = JSON.parse(data);
+        for(let groupStorage of storageGroups){
+          this.groups.push(this.groupStorageToGroup(groupStorage));
+        }
       } else if (this.useMockData) {
         console.log("using mocks for groups...");
         this.groups = this.groups_mock;
@@ -177,9 +181,12 @@ export class LoaderProvider {
 
   private loadFriends() {
     console.log('Loading Friends...');
-    return this.storage.get(this.FIRENDS_KEY).then((friends) => {
-      if (friends !== null) {
-        this.friends = JSON.parse(friends);
+    return this.storage.get(this.FIRENDS_KEY).then((data) => {
+      if (data !== null) {
+        let storageGroups: GroupStorage[] = JSON.parse(data);
+        for(let groupStorage of storageGroups){
+          this.friends.push(this.groupStorageToGroup(groupStorage));
+        }
       } else if (this.useMockData) {
         console.log("Using mocks for friends...");
         this.friends = this.friends_mock;
@@ -195,11 +202,11 @@ export class LoaderProvider {
   }
 
   public saveGroups(groups: Group[]) {
-    this.saveObjects(this.GROUPS_KEY, groups);
+    this.storeGroups(this.GROUPS_KEY, groups);
   }
 
   public saveFriends(friends: Group[]) {
-    this.saveObjects(this.FIRENDS_KEY, friends);
+    this.storeGroups(this.FIRENDS_KEY, friends);
   }
 
   private saveObjects(key: string, obj: any) {
@@ -210,6 +217,53 @@ export class LoaderProvider {
         console.log('ERROR writing ' + key + ' ' + err);
       })
     }
+  }
+
+  private storeGroups(key: string, groups: Group[]){
+    let obj: GroupStorage[] = [];
+    for(let group of groups){
+      obj.push(this.groupToGroupStorage(group));
+    }
+
+    if (this.storeData) {
+      this.storage.set(key, JSON.stringify(obj)).then(() => {
+        console.log('Stored ' + key + ' successfully!')
+      }, (err) => {
+        console.log('ERROR writing ' + key + ' ' + err);
+      })
+    }
+  }
+
+  private groupStorageToGroup(groupStorage: GroupStorage): Group{
+    return (groupStorage === null)? null : {
+      id: groupStorage.id,
+      name: groupStorage.name,
+      blockHeight: groupStorage.blockHeight,
+      members: new Map(groupStorage.members),
+      balances: new Map(groupStorage.balances)
+    }
+  }
+
+  private groupToGroupStorage(group: Group): GroupStorage{
+    return (group === null)? null : {
+      id: group.id,
+      name: group.name,
+      members: Array.from(group.members.entries()),
+      balances: Array.from(group.balances.entries()),
+      blockHeight: group.blockHeight
+    }
+  }
+
+  public saveAll(){
+    this.saveGroups(this.groups);
+    this.saveFriends(this.friends);
+    this.saveAccount(this.account.getSelf());
+    console.log('Stored everything! Ready to reboot.')
+  }
+
+  clearAll(){
+    this.storage.clear();
+    console.log('Cleared everything! Ready to reboot.')
   }
 
 

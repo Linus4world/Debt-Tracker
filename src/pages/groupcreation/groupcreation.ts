@@ -32,10 +32,12 @@ export class GroupcreationPage {
 
   addMember() {
     //TODO check address with nem and get name
-    let name = 'Member' + this.members.length;
-    this.members.push(name);
-    this.membersMap.set(this.memberAddress, name);
-    this.memberAddress = '';
+    if(this.memberAddress.length > 0){
+      let name = this.memberAddress;
+      this.members.push(name);
+      this.membersMap.set(this.memberAddress, name);
+      this.memberAddress = '';
+    }
   }
 
   checkInput(): boolean {

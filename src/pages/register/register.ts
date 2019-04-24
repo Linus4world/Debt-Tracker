@@ -23,12 +23,13 @@ export class RegisterPage {
   userName = "";
   loaded = false;
   //Just for debugging if we do not want to enter the name again and again
-  private hideRegisterPage = true;
+  private hideRegisterPage = false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     public loader: LoaderProvider, public account: AccountProvider, storage: Storage) {
 
-    storage.get("ACCOUNT").then((acc: AccountDetails) => {
+    storage.get("ACCOUNT").then((data) => {
+      let acc: AccountDetails = JSON.parse(data);
       if (this.hideRegisterPage || acc !== null) {
         if (acc === null) {
           console.log('Using account mock...');

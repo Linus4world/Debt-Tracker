@@ -37,4 +37,14 @@ export class HomePage {
     this.NAME = this.account.getName();
   }
 
+  //TODO Only for Dev
+  storeAll(){
+    this.loader.saveAll();
+  }
+
+  //TODO Only for Dev
+  clearAll(){
+    this.loader.clearAll();
+  }
+
 }

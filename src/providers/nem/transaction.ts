@@ -1,12 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  Account, Address, Deadline, UInt64, NetworkType, PlainMessage,
+  Account, Address, Deadline, UInt64, PlainMessage,
   TransferTransaction, Mosaic, MosaicId, TransactionHttp, AggregateTransaction
 } from 'nem2-sdk';
 import { AccountProvider } from '../account/account';
 import { NemSettingsProvider } from './nemsettings';
-import { Group } from '../../models/group.model';
 
 
 @Injectable()
