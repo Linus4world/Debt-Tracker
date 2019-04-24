@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
 import { GroupsPage } from '../groups/groups';
+import { UInt64 } from 'nem2-sdk';
 
 /**
  * Generated class for the GroupcreationPage page.
@@ -63,7 +64,8 @@ export class GroupcreationPage {
         id:  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
         name: this.groupName,
         members: this.membersMap,
-        balances: b
+        balances: b,
+        blockHeight: UInt64.fromUint(0)
       }
       console.log(group);
       this.groupPage.addGroup(group);

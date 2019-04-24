@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FriendsPage } from '../friends/friends';
 import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
+import { UInt64 } from 'nem2-sdk';
 
 /**
  * Generated class for the FriendcreationPage page.
@@ -45,7 +46,8 @@ export class FriendcreationPage {
         id: ID,
         name: m.get(this.address),
         members: m,
-        balances: b
+        balances: b,
+        blockHeight: UInt64.fromUint(0)
       }
       this.friendsPage.addFriend(f);
       this.navCtrl.pop();

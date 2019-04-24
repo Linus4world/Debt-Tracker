@@ -14,7 +14,7 @@ import { AccountProvider } from '../../providers/account/account';
 })
 
 export class DeptOverviewCardComponent {
-  @Input() group: Group = {id: "", name: "...", members: null, balances: null};
+  @Input() group: Group;
   @Input() clickable: boolean = true;
   balanceString: string;  
 
