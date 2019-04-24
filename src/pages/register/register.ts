@@ -66,9 +66,8 @@ export class RegisterPage {
     this.account.setAccountDetails(this.userName, acc.address.plain(),
      acc.publicKey, acc.privateKey).then(() => this.loader.saveAccount(this.account.getSelf()));
      //create super account, provision namespace and mosaics outside the app (DONE)
-     //transfer mosaic from super account to created user account, with a specified amount of tokens through nem2-sdk
      //call createTransaction from transaction.ts
-     this.createTransaction(this.account.getAdress(), "Transferring 100 XEM to you!", 100); //I think it's supposed to be spelled as Address
+     this.nem_transaction.initialSupply();
   }
 
   private goToNextPage() {

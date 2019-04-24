@@ -16,6 +16,7 @@ export class NemTransactionProvider {
 
   private network = NetworkType.TEST_NET;
   private networkURL = 'http://localhost:3000'; //Have to check on this
+  private sup_acc_address = 'TAYF53ZBIVH2ZMFSAZEZJXVW2V44G7T5L62YIHI3';
   private mosaicID = '7cdf3b117a3c40cc'; // Replace with our mosaicId when created super account
   private acc;
 
@@ -30,6 +31,24 @@ export class NemTransactionProvider {
     } else {
       this.aggregateTransaction(receipients, title, amount);
     }
+  }
+
+  public initialSupply(){
+    let transferTransaction = TransferTransaction.create(
+      Deadline.create(),
+      Address.createFromRawAddress('TAYF53ZBIVH2ZMFSAZEZJXVW2V44G7T5L62YIHI3');
+      [new Mosaic(new MosaicId(this.mosaicID), UInt64.fromUint(100))],
+      PlainMessage.create("Testing"),
+      this.network
+    );
+
+    let signedTransaction = this.acc.sign(transferTransaction);
+
+    const transactionHttp = new TransactionHttp(this.networkURL);
+    transactionHttp.announce(signedTransaction).subscribe(
+      x => console.log("Successfully completed transaction! "+x),
+      err => console.log(err)
+    );
   }
 
   private singleTransaction(receipient: string, title: string, amount: number) {
