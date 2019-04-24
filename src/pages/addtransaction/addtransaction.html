@@ -1,18 +1,18 @@
 <ion-header>
-    <ion-navbar>
+    <ion-navbar color="navbar">
       <ion-title>Create a new Transaction!</ion-title>
     </ion-navbar>
   </ion-header>
   
   <ion-content padding>
     <ion-item>
-      <ion-label floating>Title of the Transaction</ion-label>
-      <ion-input id="nameField" clearInput [(ngModel)]="title"></ion-input>
+      <ion-label floating>Title of Transaction</ion-label>
+      <ion-input clearInput [(ngModel)]="title"></ion-input>
     </ion-item>
 
     <ion-item>
         <ion-label floating>Amount</ion-label>
-        <ion-input type="number" placeholder="0" id="amountField" clearInput [(ngModel)]="amount"></ion-input>
+        <ion-input type="number" placeholder="1" color="{{amountOK ? 'primary' : 'danger'}}" clearInput [(ngModel)]="amount"></ion-input>
     </ion-item>
 
     <ion-label style="font-size: 1.5em; margin-top: 4em">List of members</ion-label>
@@ -22,7 +22,7 @@
   
    <ion-item>
     <ion-label floating>Address of member</ion-label>
-    <ion-input id="address" clearInput [(ngModel)]="memberAddress"></ion-input>
+    <ion-input color="{{memberOK? 'primary' : 'danger'}}" clearInput [(ngModel)]="memberAddress"></ion-input>
   </ion-item>
   
     <button ion-button (click)="addMember()">Add member</button>

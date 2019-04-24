@@ -13,20 +13,26 @@ import { LoaderProvider } from '../../providers/loader/loader';
 export class GroupsPage {
 
   private group_list: Group[];
+  private nameList: Map<string, Group> = new Map<string, Group>();
+
   constructor(public navCtrl: NavController, public navParams: NavParams,
-     public account: AccountProvider, public loader: LoaderProvider) {
-      this.group_list=loader.getGroups();
+    public account: AccountProvider, public loader: LoaderProvider) {
+    this.group_list = loader.getGroups();
+    for (let g of this.group_list) {
+      this.nameList.set(g.name, g);
     }
+  }
 
   ionViewDidLoad() {
   }
 
-  createGroup(){
-    this.navCtrl.push(GroupcreationPage, {groupPage: this});
+  createGroup() {
+    this.navCtrl.push(GroupcreationPage, { groupPage: this, map: this.nameList });
   }
 
-  addGroup(group: Group){
+  addGroup(group: Group) {
     this.group_list.push(group);
+    this.nameList.set(group.name, group);
     console.log('Added group!');
     this.loader.saveGroups(this.group_list);
   }

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { AccountDetails } from '../../models/accountdetails.model';
 import { AccountProvider } from '../account/account';
 import { NemMonitorProvider } from '../nem/monitor';
-import { TransferTransaction, Address, UInt64 } from 'nem2-sdk';
+import { TransferTransaction, Address, UInt64, Transaction } from 'nem2-sdk';
 
 
 @Injectable()
@@ -15,15 +15,15 @@ export class LoaderProvider {
   /**
    * If true, example groups and friends will be loaded
    */
-  private useMockData: boolean = true;
+  private readonly useMockData: boolean = true;
   /**
    * If true, data gets stored on the phone/computer persistently
    */
-  private storeData: boolean = false;
+  private readonly storeData: boolean = false;
 
   private groups: Array<Group> = [];
   private friends: Array<Group> = [];
-
+  private latestTransactions: Transaction[] = [];
 
   private self: AccountDetails;
 
@@ -35,9 +35,9 @@ export class LoaderProvider {
   private observer;
   private overAllBalance = 0;
 
-  private GROUPS_KEY = 'GROUPS';
-  private FIRENDS_KEY = 'FRIENDS';
-  private ACCOUNT_KEY = 'ACCOUNT';
+  private readonly GROUPS_KEY = 'GROUPS';
+  private readonly FIRENDS_KEY = 'FRIENDS';
+  private readonly ACCOUNT_KEY = 'ACCOUNT';
 
   constructor(public http: HttpClient,
     public storage: Storage, public account: AccountProvider, public monitor: NemMonitorProvider) {
@@ -79,6 +79,10 @@ export class LoaderProvider {
       return this.friends;
     }
   }
+  
+  public getLatestTransactions(): Transaction[]{
+    return this.latestTransactions;
+  }
 
   private getOverallBalance() {
     let overAllBalance = 0;
@@ -98,11 +102,11 @@ export class LoaderProvider {
     }
   }
 
-
-  public loadLatestTransactions() {
+  public loadLatestTransactions(): Promise<void> {
     return this.monitor.getLatestTransactions().then(
       (transactions) => {
         if (transactions === null) { return }
+        this.latestTransactions = transactions;
         for (let t of transactions) {
           if (t instanceof TransferTransaction) {
             //Check if this is a message for the user

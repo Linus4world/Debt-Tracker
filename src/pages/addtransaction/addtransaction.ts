@@ -15,6 +15,9 @@ export class AddtransactionPage {
   memberAddress:string = "";
   members: Array<string> = new Array<string>();
 
+  amountOK = true;
+  memberOK = true;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, public nemTransaction: NemTransactionProvider) {
     this.group = navParams.data;
   }
@@ -27,7 +30,9 @@ export class AddtransactionPage {
   }
 
   checkInput(): boolean{
-    return !(this.title === "" || this.members.length < 1 || this.amount === null || this.amount === 0);
+    this.amountOK = this.amount !== null && this.amount > 0;
+    this.memberOK = this.members.length > 0;
+    return this.amountOK && this.memberOK ;
   }
 
   submit(){

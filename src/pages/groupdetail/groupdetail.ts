@@ -5,6 +5,8 @@ import { AccountProvider } from '../../providers/account/account';
 import { CurrencyProvider } from '../../providers/currency/currency';
 import { AddmemberPage } from '../addmember/addmember';
 import { AddtransactionPage } from '../addtransaction/addtransaction';
+import { LoaderProvider } from '../../providers/loader/loader';
+import { TransferTransaction, Address } from 'nem2-sdk';
 
 /**
  * Generated class for the GroupdetailPage page.
@@ -19,13 +21,19 @@ import { AddtransactionPage } from '../addtransaction/addtransaction';
   templateUrl: 'groupdetail.html',
 })
 export class GroupdetailPage {  
-  private group: Group;
-  private members: string[] = [];
+  group: Group;
+  members: string[] = [];
+  transactions: string[] = [];
+  loading: boolean = false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public account: AccountProvider,
-    public currency: CurrencyProvider) {
+    public currency: CurrencyProvider, public loader: LoaderProvider) {
      this.group = navParams.get("group");
      this.members = Array.from(this.group.members.keys());
+  }
+
+  ionViewWillEnter(){
+    this.update()
   }
 
   getMemberBalance(memberAdress: string){
@@ -49,6 +57,25 @@ export class GroupdetailPage {
     this.group.members.set(address, name);
     this.group.balances.set(address, 0);
     console.log('added: ' + name);
+  }
+
+  update(){
+    console.log('Updating...')
+    this.loading = true;
+    this.transactions = [];
+    this.loader.loadLatestTransactions().then(() => {
+      let txs = this.loader.getLatestTransactions();
+      for(let tx of txs){
+        if(tx instanceof TransferTransaction && tx.recipient instanceof Address){
+          this.transactions.push("" + tx.signer.address.plain() + ' => ' + tx.recipient.plain());
+        }
+      }
+      if(this.transactions.length==0){
+        this.transactions.push("No Transactions found!");
+        this.transactions.push("Format: \t [SIGNER ADRESS] => [RECEIPIENT ADDRESS]")
+      }
+      this.loading = false;
+    })
   }
 
 }
