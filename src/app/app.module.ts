@@ -24,6 +24,8 @@ import { AddmemberPage } from '../pages/addmember/addmember';
 import { AddtransactionPage } from '../pages/addtransaction/addtransaction';
 import { RegisterPage } from '../pages/register/register';
 import { NemTransactionProvider } from '../providers/nem/transaction';
+import { NemSettingsProvider } from '../providers/nem/nemsettings';
+import { NemMonitorProvider } from '../providers/nem/monitor';
 
 @NgModule({
   declarations: [
@@ -69,6 +71,8 @@ import { NemTransactionProvider } from '../providers/nem/transaction';
     File,
     LoaderProvider,
     NemTransactionProvider,
+    NemSettingsProvider,
+    NemMonitorProvider
   ]
 })
 export class AppModule {}

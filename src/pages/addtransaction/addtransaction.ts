@@ -41,7 +41,7 @@ export class AddtransactionPage {
   }
 
   private createTransaction(){
-    this.nemTransaction.createTransAction(this.members, this.title, this.amount);
+    this.nemTransaction.createTransAction(this.members, this.title, this.amount, this.group.id);
   }
 
 

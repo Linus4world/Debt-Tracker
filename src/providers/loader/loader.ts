@@ -5,13 +5,10 @@ import { Group } from '../../models/group.model';
 import { Observable } from 'rxjs';
 import { AccountDetails } from '../../models/accountdetails.model';
 import { AccountProvider } from '../account/account';
+import { NemMonitorProvider } from '../nem/monitor';
+import { TransferTransaction, Address, UInt64 } from 'nem2-sdk';
 
-/*
-  Generated class for the LoaderProvider provider.
 
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class LoaderProvider {
 
@@ -43,7 +40,7 @@ export class LoaderProvider {
   private ACCOUNT_KEY = 'ACCOUNT';
 
   constructor(public http: HttpClient,
-    public storage: Storage, public account: AccountProvider) {
+    public storage: Storage, public account: AccountProvider, public monitor: NemMonitorProvider) {
 
   }
 
@@ -60,6 +57,7 @@ export class LoaderProvider {
           this.observer = observer;
           observer.next(this.overAllBalance);
         });
+        this.loadLatestTransactions()
       }).then(() => console.log('Everything is loaded!'));
   }
 
@@ -99,6 +97,64 @@ export class LoaderProvider {
       this.observer.next(this.overAllBalance);
     }
   }
+
+
+  public loadLatestTransactions() {
+    return this.monitor.getLatestTransactions().then(
+      (transactions) => {
+        if (transactions === null) { return }
+        for (let t of transactions) {
+          if (t instanceof TransferTransaction) {
+            //Check if this is a message for the user
+            let groupID = t.message.payload.split(':')[0];
+            let group = this.getGroup(groupID);
+            if (group === null) { console.log('[WARNING] Group not found! ' + t.message.payload); return }
+            this.applyUpdates(group, t);
+          }
+        }
+      },
+      (err) => {
+        console.log('[ERROR] while loading latest Transactions: ' + err);
+      }
+    )
+  }
+
+  private getGroup(groupID: string): Group {
+    if (this.groups !== undefined && this.groups !== null) {
+      for (let g of this.groups) {
+        if (g.id === groupID) { return g }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Applies the changes of the given tx
+   * @param TransferTransaction to be applied
+   */
+  private applyUpdates(group: Group, tx: TransferTransaction) {
+    //Check if changes were applied before
+    if (tx.transactionInfo.height <= group.blockHeight) { return }
+
+    //Get information
+    let from = tx.signer.address.plain();
+    let to = '';
+    if (tx.recipient instanceof Address) {
+      to = tx.recipient.plain();
+    }
+    let amount = tx.mosaics.length; //TODO Have to validate this
+
+    //Apply changes
+    let oldBalance = group.balances.get(from);
+    if (oldBalance == null) { console.log('[ERROR] receipient ' + from + ' not found!'); return }
+    group.balances.set(from, oldBalance - amount);
+
+    oldBalance = group.balances.get(to);
+    if (oldBalance == null) { console.log('[ERROR] receipient ' + to + ' not found!'); return }
+    group.balances.set(to, oldBalance - amount);
+    console.log('[SUCCESS] ' + from + ' ==> ' + to);
+  }
+
 
 
   //LOADING
@@ -159,7 +215,7 @@ export class LoaderProvider {
   private setupFriendsMock() {
     let m1: Map<string, string> = new Map<string, string>();
     let b1: Map<string, number> = new Map<string, number>();
-    let f1: Group = { id: "3", name: "Nicolas", members: m1, balances: b1 };
+    let f1: Group = { id: "3", name: "Nicolas", members: m1, balances: b1, blockHeight: UInt64.fromUint(0) };
 
     m1.set(this.self.ADRESS, this.self.name);
     m1.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA5', 'Nicolas');
@@ -179,9 +235,9 @@ export class LoaderProvider {
     let b2: Map<string, number> = new Map<string, number>();
     let b3: Map<string, number> = new Map<string, number>();
     //Groups
-    let g1: Group = { id: "0", name: 'Trip', members: m1, balances: b1 };
-    let g2: Group = { id: "1", name: 'Birthday party', members: m2, balances: b2 };
-    let g3: Group = { id: "2", name: 'Poker Table', members: m3, balances: b3 };
+    let g1: Group = { id: "0", name: 'Trip', members: m1, balances: b1, blockHeight: UInt64.fromUint(0) };
+    let g2: Group = { id: "1", name: 'Birthday party', members: m2, balances: b2, blockHeight: UInt64.fromUint(0) };
+    let g3: Group = { id: "2", name: 'Poker Table', members: m3, balances: b3, blockHeight: UInt64.fromUint(0) };
 
     m1.set(this.self.ADRESS, this.self.name);
     m1.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA5', 'Julian');
