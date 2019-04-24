@@ -16,7 +16,7 @@ export class NemTransactionProvider {
 
   private network = NetworkType.TEST_NET;
   private networkURL = 'http://localhost:3000'; //Have to check on this
-  private mosaicID = '7cdf3b117a3c40cc'; // Replace with our mosaicId
+  private mosaicID = '7cdf3b117a3c40cc'; // Replace with our mosaicId when created super account
   private acc;
 
   constructor(public http: HttpClient, public account: AccountProvider) {
