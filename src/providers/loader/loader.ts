@@ -8,6 +8,7 @@ import { AccountProvider } from '../account/account';
 import { NemMonitorProvider } from '../nem/monitor';
 import { TransferTransaction, Address, UInt64, Transaction } from 'nem2-sdk';
 import { GroupStorage } from '../../models/groupstorage';
+import { ToastController } from 'ionic-angular';
 
 
 @Injectable()
@@ -16,7 +17,7 @@ export class LoaderProvider {
   /**
    * If true, example groups and friends will be loaded
    */
-  private readonly useMockData: boolean = false;
+  private readonly useMockData: boolean = true;
   /**
    * If true, data gets stored on the phone/computer persistently
    */
@@ -41,7 +42,8 @@ export class LoaderProvider {
   private readonly ACCOUNT_KEY = 'ACCOUNT';
 
   constructor(public http: HttpClient,
-    public storage: Storage, public account: AccountProvider, public monitor: NemMonitorProvider) {
+    public storage: Storage, public account: AccountProvider, public monitor: NemMonitorProvider,
+    public toastCtrl: ToastController) {
 
   }
 
@@ -60,6 +62,15 @@ export class LoaderProvider {
         });
         this.loadLatestTransactions()
       }).then(() => console.log('Everything is loaded!'));
+  }
+
+  private presentToast(message: string) {
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 3000,
+      position: 'bottom'
+    });
+    toast.present();
   }
 
 
@@ -120,6 +131,7 @@ export class LoaderProvider {
       },
       (err) => {
         console.log('[ERROR] while loading latest Transactions: ' + err);
+        this.presentToast('[ERROR] while loading latest Transactions:');
       }
     )
   }

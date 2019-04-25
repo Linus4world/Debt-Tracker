@@ -6,6 +6,7 @@ import {
 } from 'nem2-sdk';
 import { AccountProvider } from '../account/account';
 import { NemSettingsProvider } from './nemsettings';
+import { ToastController } from 'ionic-angular';
 
 
 @Injectable()
@@ -13,7 +14,8 @@ export class NemTransactionProvider {
 
   private acc;
 
-  constructor(public http: HttpClient, public account: AccountProvider, public nemSettings: NemSettingsProvider) {
+  constructor(public http: HttpClient, public account: AccountProvider, public nemSettings: NemSettingsProvider,
+    public toastCtrl: ToastController) {
     console.log('Hello NemTransactionProvider Provider');
     this.acc = Account.createFromPrivateKey(account.getPrivateKey(), this.nemSettings.networkType);
   }
@@ -48,8 +50,10 @@ export class NemTransactionProvider {
     //Announce to network
     const transactionHttp = new TransactionHttp(this.nemSettings.networkURL);
     transactionHttp.announce(signedTransaction).subscribe(
-      x => console.log("Successfully completed transaction! "+x),
-      err => console.log(err)
+      x => {console.log("Successfully completed transactions! "+x);
+        this.presentToast('Successfully completed transactions!')}, 
+      err => {console.error(err);
+        this.presentToast('Transaction was not successful!')}
     );
   }
 
@@ -72,7 +76,20 @@ export class NemTransactionProvider {
     //Announce to network
     const transactionHttp = new TransactionHttp(this.nemSettings.networkURL);
     transactionHttp.announce(signedTransaction).subscribe(
-      x => console.log("Successfully completed transactions! "+x), 
-      err => console.error(err));
+      x => {console.log("Successfully completed transactions! "+x);
+        this.presentToast('Successfully completed transactions!')}, 
+      err => {console.error(err);
+        this.presentToast('Transaction was not successful!')}
+    );
+  }
+
+  
+  private presentToast(message: string) {
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 3000,
+      position: 'bottom'
+    });
+    toast.present();
   }
 }
