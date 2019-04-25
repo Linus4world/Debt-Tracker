@@ -1,3 +1,26 @@
 page-groupdetail {
+    .flex-container{
+        display:flex;
+        justify-content: space-around;
+        font-size: 2em;
+    }
 
+    .balance-text{
+        font-size: 2em;
+    }
+
+    .flex-center{
+        align-self: center;
+        float: left;
+        margin-right: 10px;
+        font-size: 40px;
+    }
+
+    .flex-box{
+        display: flex;
+    }
+
+    .balance-text{
+        font-size: 2em;
+    }
 }

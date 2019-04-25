@@ -26,6 +26,7 @@ import { RegisterPage } from '../pages/register/register';
 import { NemTransactionProvider } from '../providers/nem/transaction';
 import { NemSettingsProvider } from '../providers/nem/nemsettings';
 import { NemMonitorProvider } from '../providers/nem/monitor';
+import { ChartComponent } from '../components/chart/chart';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { NemMonitorProvider } from '../providers/nem/monitor';
     GroupdetailPage,
     AddmemberPage,
     AddtransactionPage,
-    RegisterPage
+    RegisterPage,
+    ChartComponent
   ],
   imports: [
     BrowserModule,

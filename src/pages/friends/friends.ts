@@ -42,4 +42,17 @@ export class FriendsPage {
     this.navCtrl.push(FriendcreationPage, {friendsPage: this});
   }
 
+  removeGroup(id: string){
+    let new_group_list = [];
+    for(let g of this.friend_list){
+      if(g.id !== id){
+        new_group_list.push(g);
+      }
+    }
+    this.friend_list = new_group_list;
+    console.log('Removed group!');
+    this.loader.saveFriends(this.friend_list);
+    this.loader.updateBalance();
+  }
+
 }

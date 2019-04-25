@@ -1,9 +1,4 @@
-<!--
-  Generated template for the GroupdetailPage page.
 
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
   <ion-navbar color="navbar">
     <ion-title>{{group.name}}</ion-title>
@@ -14,13 +9,40 @@
 </ion-header>
 
 <ion-content padding>
-  <h1>Your Balance: <b>{{getOwnBalance()}}</b></h1>
-  <ul>
-    <li *ngFor="let m of members">{{group.members.get(m)}}: {{getMemberBalance(m)}}</li>
-  </ul>
+  <div *ngIf="getOwnBalance() < 0" class="flex-box">
+      <ion-icon name="alert" style="color: red" class="flex-center"></ion-icon>
+      <p class="flex-center balance-text">
+        You owe: {{getOwnBalanceString()}}
+      </p>
+  </div>
+
+    <div *ngIf="getOwnBalance() > 0" class="flex-box">
+      <ion-icon  name="alert" style="color: orange" class="flex-center"></ion-icon>
+      <p class="flex-center balance-text">
+        You are owed: {{getOwnBalanceString()}}
+      </p>
+    </div>
+
+    <div *ngIf="getOwnBalance() == 0" class="flex-box">
+      <ion-icon name="checkmark-circle-outline" style="color: darkgreen" class="flex-center"></ion-icon>
+      <p class="flex-center balance-text">
+        You are quitt!
+      </p>
+    </div>
+  
+  <chart [group]="group"></chart>
+
   <h2>Recent transactions:</h2>
-  <ion-spinner name="dots" *ngIf="loading"></ion-spinner>
-  <p *ngFor="let t of transactions">{{t}}</p>
+  <div class="flex-container">
+      <ion-icon name="person"></ion-icon>
+      <ion-icon name="arrow-round-forward"></ion-icon>
+      <ion-icon name="people"></ion-icon>
+    </div>
+  <div ion-label text-center>
+  <ion-spinner text-center name="dots" *ngIf="loading"></ion-spinner>
+  </div>
+  <p ion-label text-center *ngFor="let t of transactions">{{t}}</p>
+
 
   <ion-fab bottom right>
     <button ion-fab>
@@ -30,5 +52,10 @@
       <button ion-fab (click)="addTransaction()"><ion-icon name="logo-usd"></ion-icon></button>
       <button ion-fab (click)="addPerson()"><ion-icon name="person-add"></ion-icon></button>      
       </ion-fab-list>
+  </ion-fab>
+  <ion-fab bottom left>
+    <button ion-fab icon-only (click)="presentConfirm()">
+        <ion-icon name="trash"></ion-icon>
+    </button>
   </ion-fab>
 </ion-content>

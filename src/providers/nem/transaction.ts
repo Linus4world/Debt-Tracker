@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   Account, Address, Deadline, UInt64, PlainMessage,
-  TransferTransaction, Mosaic, MosaicId, TransactionHttp, AggregateTransaction, Transaction, SignedTransaction
+  TransferTransaction, Mosaic, MosaicId, TransactionHttp, AggregateTransaction, SignedTransaction
 } from 'nem2-sdk';
 import { AccountProvider } from '../account/account';
 import { NemSettingsProvider } from './nemsettings';

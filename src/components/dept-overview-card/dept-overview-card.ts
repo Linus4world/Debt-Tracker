@@ -4,6 +4,8 @@ import { NavController } from 'ionic-angular';
 import { GroupdetailPage } from '../../pages/groupdetail/groupdetail';
 import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
+import { GroupsPage } from '../../pages/groups/groups';
+import { Observable } from 'rxjs';
 
 /**
  * The component displays the user's current balance in that group.
@@ -16,14 +18,22 @@ import { AccountProvider } from '../../providers/account/account';
 export class DeptOverviewCardComponent {
   @Input() group: Group;
   @Input() clickable: boolean = true;
+  @Input() groupsPage: GroupsPage;
+  @Input() observer: Observable<number>;
   balanceString: string;  
 
   constructor( public currencyProvider: CurrencyProvider, public navCtrl: NavController,
     public account: AccountProvider) {
     this.setBalanceString();
+    if(this.observer !== undefined){
+      this.observer.subscribe((data) => {
+        this.group.balances.set(this.account.getAdress(), data);
+      })
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    console.log("Changes!")
     this.group = changes.group.currentValue;
     this.setBalanceString();
   }
@@ -44,7 +54,7 @@ export class DeptOverviewCardComponent {
 
   showGroupDetails(){
     if(this.clickable){
-      this.navCtrl.push(GroupdetailPage, {group: this.group});
+      this.navCtrl.push(GroupdetailPage, {group: this.group, groupPage: this.groupsPage});
     }
   }
 

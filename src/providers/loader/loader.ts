@@ -107,7 +107,13 @@ export class LoaderProvider {
     return overAllBalance;
   }
 
-  public updateBalance() {
+  public updateBalance(groups?: Group[]) {
+    if(groups !== undefined){
+      console.log('Updated groups!')
+      this.groups = groups;
+    }
+    console.log('Updating balances...');
+    console.log(this.groups);
     this.overAllBalance = this.getOverallBalance();
     if (this.observer !== undefined) {
       this.observer.next(this.overAllBalance);
@@ -214,10 +220,12 @@ export class LoaderProvider {
   }
 
   public saveGroups(groups: Group[]) {
+    this.groups = groups;
     this.storeGroups(this.GROUPS_KEY, groups);
   }
 
   public saveFriends(friends: Group[]) {
+    this.friends = friends;
     this.storeGroups(this.FIRENDS_KEY, friends);
   }
 
