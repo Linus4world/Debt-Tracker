@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FriendsPage } from '../friends/friends';
 import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
+import { UInt64 } from 'nem2-sdk';
 
 /**
  * Generated class for the FriendcreationPage page.
@@ -19,6 +20,7 @@ import { AccountProvider } from '../../providers/account/account';
 export class FriendcreationPage {
   address: string = '';
   friendsPage: FriendsPage;
+  inputOK = true;
   @ViewChild('addressField') eRef: ElementRef;
 
 
@@ -32,7 +34,8 @@ export class FriendcreationPage {
 
   submit(){
     //TODO check address with nem
-    if(this.address != ''){
+    this.inputOK = this.address != '';
+    if(this.inputOK){
       let ID = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       let m = new Map<string,string>();
       m.set(this.account.getAdress(), this.account.getName());
@@ -45,7 +48,8 @@ export class FriendcreationPage {
         id: ID,
         name: m.get(this.address),
         members: m,
-        balances: b
+        balances: b,
+        blockHeight: UInt64.fromUint(0)
       }
       this.friendsPage.addFriend(f);
       this.navCtrl.pop();

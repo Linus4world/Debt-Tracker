@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AccountDetails } from '../../models/accountdetails.model';
-import { LoaderProvider } from '../loader/loader';
 
 @Injectable()
 export class AccountProvider {

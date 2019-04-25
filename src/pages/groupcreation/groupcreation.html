@@ -5,15 +5,15 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-  <ion-navbar>
+  <ion-navbar color="navbar">
     <ion-title>Create a new group</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
   <ion-item>
-    <ion-label floating>Name of the group</ion-label>
-    <ion-input clearInput [(ngModel)]="groupName"></ion-input>
+    <ion-label floating color="{{nameOK? 'primary' : 'danger'}}">Name of the group</ion-label>
+    <ion-input clearInput [(ngModel)]="groupName" (ionBlur)="checkInput()"></ion-input>
   </ion-item>
 
   <ion-label style="font-size: 1.5em; margin-top: 4em">List of members</ion-label>
@@ -22,8 +22,8 @@
   </ul>
 
  <ion-item>
-  <ion-label floating>Address of member</ion-label>
-  <ion-input id="address" clearInput [(ngModel)]="memberAddress"></ion-input>
+  <ion-label floating color="{{nameOK? 'primary' : 'danger'}}">Address of member</ion-label>
+  <ion-input id="address" clearInput [(ngModel)]="memberAddress" (ionBlur)="checkInput()"></ion-input>
 </ion-item>
 
   <button ion-button (click)="addMember()">Add member</button>

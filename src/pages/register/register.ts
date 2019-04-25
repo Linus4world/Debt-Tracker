@@ -6,7 +6,6 @@ import { AccountProvider } from '../../providers/account/account';
 import { Account, NetworkType } from 'nem2-sdk';
 import { Storage } from '@ionic/storage';
 import { AccountDetails } from '../../models/accountdetails.model';
-import { NemTransactionProvider } from '../../providers/nem/transaction';
 
 /**
  * Generated class for the RegisterPage page.
@@ -24,12 +23,13 @@ export class RegisterPage {
   userName = "";
   loaded = false;
   //Just for debugging if we do not want to enter the name again and again
-  private hideRegisterPage = true;
+  private hideRegisterPage = false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-    public loader: LoaderProvider, public account: AccountProvider, storage: Storage, public nem_transaction: NemTransactionProvider) {
+    public loader: LoaderProvider, public account: AccountProvider, storage: Storage) {
 
-    storage.get("ACCOUNT").then((acc: AccountDetails) => {
+    storage.get("ACCOUNT").then((data) => {
+      let acc: AccountDetails = JSON.parse(data);
       if (this.hideRegisterPage || acc !== null) {
         if (acc === null) {
           console.log('Using account mock...');
@@ -64,11 +64,14 @@ export class RegisterPage {
   private createAccount() {
     let acc = Account.generateNewAccount(NetworkType.MIJIN_TEST);
     this.account.setAccountDetails(this.userName, acc.address.plain(),
-     acc.publicKey, acc.privateKey).then(() => this.loader.saveAccount(this.account.getSelf()));
-     //create super account, provision namespace and mosaics outside the app (DONE)
+     acc.publicKey, acc.privateKey).then(() => {
+      this.loader.saveAccount(this.account.getSelf()));
+      //create super account, provision namespace and mosaics outside the app (DONE)
      //call createTransaction from transaction.ts
      this.nem_transaction.initialSupply();
-  }
+    }
+    }
+
 
   private goToNextPage() {
     console.log("continue...");

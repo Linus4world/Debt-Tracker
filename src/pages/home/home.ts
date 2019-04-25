@@ -15,7 +15,7 @@ import { Group } from '../../models/group.model';
 export class HomePage {
   NAME: string = 'Unknown';
   CURRENCY: string;
-  group: Group = {id: "", name: "...", members: null, balances: null};
+  group: Group = {id: "", name: "...", members: null, balances: null, blockHeight: null};
 
   constructor(public navCtrl: NavController, public loader: LoaderProvider, 
     public account: AccountProvider,currency: CurrencyProvider) {
@@ -29,12 +29,22 @@ export class HomePage {
     b.set(this.account.getAdress(), 0);
     let m = new Map();
     m.set(this.account.getAdress(), this.account.getName());
-    this.group = {id:"", name: "Overall Balance", balances: b, members: m};
+    this.group = {id:"", name: "Overall Balance", balances: b, members: m, blockHeight: null};
 
     this.loader.overAllBalance$.subscribe((data: number) => {
       this.group.balances.set(this.account.getAdress(),data);
     })
     this.NAME = this.account.getName();
+  }
+
+  //TODO Only for Dev
+  storeAll(){
+    this.loader.saveAll();
+  }
+
+  //TODO Only for Dev
+  clearAll(){
+    this.loader.clearAll();
   }
 
 }
