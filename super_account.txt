@@ -1,0 +1,133 @@
+Generated Account through nem-sdk:
+
+Private Key: 9df3098825bc542a81553077a7f7e0e8de278523e5bfb54591b5a5346daa354d
+
+Public Key: 6f860dc77d7743ab071cb7063034a071da1d95feff886bf12beb0b84d751b519
+
+Address: TAYF53ZBIVH2ZMFSAZEZJXVW2V44G7T5L62YIHI3
+
+Parent Namespace: super_account
+
+Transaction Fee: 0.150000
+
+Rental Fee: 100.000000
+
+First Mosaic:
+	name = mosaic_1
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Second Mosaic:
+	name = mosaic_2
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Third Mosaic:
+	name = mosaic_3
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Fourth Mosaic:
+	name = mosaic_4
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Fifth Mosaic:
+	name = mosaic_5
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Sixth Mosaic:
+	name = mosaic_6
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Seventh Mosaic:
+	name = mosaic_7
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Eighth Mosaic:
+	name = mosaic_8
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Ninth Mosaic:
+	name = mosaic_9
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Tenth Mosaic:
+	name = mosaic_10
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Eleventh Mosaic:
+	name = mosaic_11
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Twelfth Mosaic:
+	name = mosaic_12
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Thirteenth Mosaic:
+	name = mosaic_13
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Fourteenth Mosaic:
+	name = mosaic_14
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false
+
+Fifteenth Mosaic:
+	name = mosaic_15
+	namespace = super_account
+	initial_supply = 1000000
+	divisibility = 6
+	transferable = true
+	supply_mutable = false

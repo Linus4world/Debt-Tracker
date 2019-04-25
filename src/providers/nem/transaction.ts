@@ -12,6 +12,7 @@ import { ToastController } from 'ionic-angular';
 @Injectable()
 export class NemTransactionProvider {
 
+  private sup_acc_address = 'TAYF53ZBIVH2ZMFSAZEZJXVW2V44G7T5L62YIHI3';
   private acc;
 
   constructor(public http: HttpClient, public account: AccountProvider, public nemSettings: NemSettingsProvider,
@@ -80,6 +81,24 @@ export class NemTransactionProvider {
         this.presentToast('Successfully completed transactions!')}, 
       err => {console.error(err);
         this.presentToast('Transaction was not successful!')}
+    );
+  }
+  
+  public initialSupply(){
+    let transferTransaction = TransferTransaction.create(
+      Deadline.create(),
+      Address.createFromRawAddress('TAYF53ZBIVH2ZMFSAZEZJXVW2V44G7T5L62YIHI3');
+      [new Mosaic(new MosaicId(this.mosaicID), UInt64.fromUint(100))],
+      PlainMessage.create("Testing"),
+      this.network
+    );
+
+    let signedTransaction = this.acc.sign(transferTransaction);
+
+    const transactionHttp = new TransactionHttp(this.networkURL);
+    transactionHttp.announce(signedTransaction).subscribe(
+      x => console.log("Successfully completed transaction! "+x),
+      err => console.log(err)
     );
   }
 

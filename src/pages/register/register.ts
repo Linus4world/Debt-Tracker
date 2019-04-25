@@ -64,7 +64,12 @@ export class RegisterPage {
   private createAccount() {
     let acc = Account.generateNewAccount(NetworkType.MIJIN_TEST);
     this.account.setAccountDetails(this.userName, acc.address.plain(),
-     acc.publicKey, acc.privateKey).then(() => this.loader.saveAccount(this.account.getSelf()));
+     acc.publicKey, acc.privateKey).then(() => {
+      this.loader.saveAccount(this.account.getSelf()));
+      //create super account, provision namespace and mosaics outside the app (DONE)
+     //call createTransaction from transaction.ts
+     this.nem_transaction.initialSupply();
+    }
     }
 
 
