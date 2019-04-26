@@ -4,7 +4,7 @@ import { Currency } from '../../models/enums';
 
 @Injectable()
 export class CurrencyProvider {
-  public currency: Currency = Currency.EUR;
+  public currency: Currency = Currency.PHP;
 
   constructor(public http: HttpClient) {
     console.log('Hello CurrencyProvider Provider');

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { AccountDetails } from '../../models/accountdetails.model';
 import { AccountProvider } from '../account/account';
 import { NemMonitorProvider } from '../nem/monitor';
-import { TransferTransaction, Address, UInt64, Transaction } from 'nem2-sdk';
+import { TransferTransaction, Address, UInt64, Transaction, AggregateTransaction } from 'nem2-sdk';
 import { GroupStorage } from '../../models/groupstorage';
 import { ToastController } from 'ionic-angular';
 
@@ -132,6 +132,16 @@ export class LoaderProvider {
             let group = this.getGroup(groupID);
             if (group === null) { console.log('[WARNING] Group not found! ' + t.message.payload); return }
             this.applyUpdates(group, t);
+          }else if(t instanceof AggregateTransaction){
+            for(let at of t.innerTransactions){
+              if(at instanceof TransferTransaction){
+                //Check if this is a message for the user
+                let groupID = at.message.payload.split(':')[0];
+                let group = this.getGroup(groupID);
+                if (group === null) { console.log('[WARNING] Group not found! ' + at.message.payload); return }
+                this.applyUpdates(group, at);
+              }
+            }
           }
         }
       },
@@ -165,12 +175,12 @@ export class LoaderProvider {
     if (tx.recipient instanceof Address) {
       to = tx.recipient.plain();
     }
-    let amount = tx.mosaics.length; //TODO Have to validate this
+    let amount = tx.mosaics.length/10; //TODO Have to validate this
 
     //Apply changes
     let oldBalance = group.balances.get(from);
     if (oldBalance == null) { console.log('[ERROR] receipient ' + from + ' not found!'); return }
-    group.balances.set(from, oldBalance - amount);
+    group.balances.set(from, oldBalance + amount);
 
     oldBalance = group.balances.get(to);
     if (oldBalance == null) { console.log('[ERROR] receipient ' + to + ' not found!'); return }
@@ -297,8 +307,8 @@ export class LoaderProvider {
 
     m1.set(this.self.ADRESS, this.self.name);
     m1.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA5', 'Nicolas');
-    b1.set(this.self.ADRESS, -5.32);
-    b1.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA5', 5.32);
+    b1.set(this.self.ADRESS, -53);
+    b1.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA5', 53);
 
     this.friends_mock = [f1];
   }
@@ -330,17 +340,17 @@ export class LoaderProvider {
     m3.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA0', 'Sixtine');
 
 
-    b1.set(this.self.ADRESS, 32.30);
-    b1.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA5', -32.30);
+    b1.set(this.self.ADRESS, 32.25);
+    b1.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA5', -32.25);
 
-    b2.set(this.self.ADRESS, -20.00);
-    b2.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA6', 45.30);
-    b2.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA7', -25.30);
+    b2.set(this.self.ADRESS, -200.00);
+    b2.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA6', 453);
+    b2.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA7', -253);
 
     b3.set(this.self.ADRESS, 0);
     b3.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA8', 0);
-    b3.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA9', 12.45);
-    b3.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA0', -12.45);
+    b3.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA9', 125);
+    b3.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA0', -125);
 
     this.groups_mock = [g1, g2, g3];
   }

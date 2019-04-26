@@ -66,12 +66,12 @@ export class GroupdetailPage {
       let txs = this.loader.getLatestTransactions();
       for(let tx of txs){
         if(tx instanceof TransferTransaction && tx.recipient instanceof Address){
-          this.transactions.push("" + tx.signer.address.plain() + ' => ' + tx.recipient.plain());
+          this.transactions.push("" + tx.signer.address.plain() +' ?=== ' + (tx.mosaics.length/10.0).toFixed() +  ' ===> ' + tx.recipient.plain());
         }
       }
       if(this.transactions.length==0){
         this.transactions.push("No Transactions found!");
-        this.transactions.push("Format: \t [SIGNER] ======> [RECEIPIENT]")
+        this.transactions.push("Format: \t [SIGNER] ?=== [AMOUNT] ===> [RECEIPIENT]")
       }
       this.loading = false;
     })
