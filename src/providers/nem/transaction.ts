@@ -54,6 +54,7 @@ export class NemTransactionProvider {
     //Create Tx
     let transferTransaction = this.createTransactionObject(receipient, title, amount, groupID)
     //Sign
+    console.log("SIGN")
     let signedTransaction = this.acc.sign(transferTransaction);
     //Announce to network
     this.announceTransaction(signedTransaction);
@@ -64,8 +65,7 @@ export class NemTransactionProvider {
     let txs = [];
     for (let receipient of receipients) {
       let tx = this.createTransactionObject(receipient, title, amount, groupID);
-      tx.toAggregate(this.acc.publicAccount);
-      txs.push(tx);
+      txs.push(tx.toAggregate(this.acc.publicAccount));
     }
     const aggregateTransaction = AggregateTransaction.createComplete(Deadline.create(), txs, this.nemSettings.networkType, []);
     //Sign

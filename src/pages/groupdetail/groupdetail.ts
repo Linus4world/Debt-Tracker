@@ -19,12 +19,15 @@ export class GroupdetailPage {
   members: string[] = [];
   transactions: string[] = [];
   loading: boolean = false;
+  friend: boolean;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public account: AccountProvider,
     public currency: CurrencyProvider, public loader: LoaderProvider,
     private alertCtrl: AlertController) {
      this.group = navParams.get("group");
      this.members = Array.from(this.group.members.keys());
+     this.friend = navParams.get("friend");
+     if(this.friend === undefined){this.friend = false}
   }
 
   ionViewWillEnter(){

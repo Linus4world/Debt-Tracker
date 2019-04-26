@@ -12,7 +12,7 @@
 
 <ion-content class="page-bg" padding>
   <h1>All your friends at one look:</h1>
-  <dept-overview-card *ngFor="let f of friend_list" [groupsPage]="this" [group]="f"></dept-overview-card>
+  <dept-overview-card *ngFor="let f of friend_list" [groupsPage]="this" [group]="f" [friend]="true"></dept-overview-card>
 
   <ion-fab bottom right>
     <button ion-fab (click)="createFriend()">

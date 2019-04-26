@@ -50,7 +50,7 @@
     </button>
     <ion-fab-list side="top">
       <button ion-fab (click)="addTransaction()"><ion-icon name="logo-usd"></ion-icon></button>
-      <button ion-fab (click)="addPerson()"><ion-icon name="person-add"></ion-icon></button>      
+      <button *ngIf="!friend" ion-fab (click)="addPerson()"><ion-icon name="person-add"></ion-icon></button>      
       </ion-fab-list>
   </ion-fab>
   <ion-fab bottom left>

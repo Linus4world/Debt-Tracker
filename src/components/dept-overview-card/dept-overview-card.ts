@@ -20,6 +20,7 @@ export class DeptOverviewCardComponent {
   @Input() clickable: boolean = true;
   @Input() groupsPage: GroupsPage;
   @Input() observer: Observable<number>;
+  @Input() friend: boolean = false;
   balanceString: string;  
 
   constructor( public currencyProvider: CurrencyProvider, public navCtrl: NavController,
@@ -33,7 +34,6 @@ export class DeptOverviewCardComponent {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log("Changes!")
     this.group = changes.group.currentValue;
     this.setBalanceString();
   }
@@ -54,7 +54,7 @@ export class DeptOverviewCardComponent {
 
   showGroupDetails(){
     if(this.clickable){
-      this.navCtrl.push(GroupdetailPage, {group: this.group, groupPage: this.groupsPage});
+      this.navCtrl.push(GroupdetailPage, {group: this.group, groupPage: this.groupsPage, friend: this.friend});
     }
   }
 

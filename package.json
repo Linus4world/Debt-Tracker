@@ -31,6 +31,7 @@
     "cordova-plugin-statusbar": "^2.4.2",
     "cordova-sqlite-storage": "3.2.0",
     "ionic-angular": "^3.9.4",
+    "ionic-selectable": "^3.4.0",
     "ionicons": "3.0.0",
     "nem2-sdk": "^0.11.5",
     "rxjs": "^6.4.0",

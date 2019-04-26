@@ -147,7 +147,6 @@ export class LoaderProvider {
       },
       (err) => {
         console.log('[ERROR] while loading latest Transactions: ' + err);
-        this.presentToast('[ERROR] while loading latest Transactions:');
       }
     )
   }

@@ -27,6 +27,7 @@ import { NemTransactionProvider } from '../providers/nem/transaction';
 import { NemSettingsProvider } from '../providers/nem/nemsettings';
 import { NemMonitorProvider } from '../providers/nem/monitor';
 import { ChartComponent } from '../components/chart/chart';
+import { IonicSelectableModule } from 'ionic-selectable';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { ChartComponent } from '../components/chart/chart';
     BrowserModule,
     IonicModule.forRoot(MyApp),
     HttpClientModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
+    IonicSelectableModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
