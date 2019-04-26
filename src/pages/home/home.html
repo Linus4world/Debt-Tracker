@@ -7,7 +7,7 @@
 
 <ion-content class="page-bg" padding>
   <h2 id="Welcome">Welcome back {{NAME}}!</h2>
-  <dept-overview-card [group]="group" [clickable]="false"></dept-overview-card>
+  <dept-overview-card [group]="group" [observer]="loader.overAllBalance$" [clickable]="false"></dept-overview-card>
   
   <button ion-button large full (click)="storeAll()">Store Everything</button>  
 

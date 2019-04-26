@@ -3,16 +3,11 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { LoaderProvider } from '../../providers/loader/loader';
 import { TabsPage } from '../tabs/tabs';
 import { AccountProvider } from '../../providers/account/account';
-import { Account, NetworkType } from 'nem2-sdk';
+import { Account } from 'nem2-sdk';
 import { Storage } from '@ionic/storage';
 import { AccountDetails } from '../../models/accountdetails.model';
+import { NemSettingsProvider } from '../../providers/nem/nemsettings';
 
-/**
- * Generated class for the RegisterPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -22,11 +17,15 @@ import { AccountDetails } from '../../models/accountdetails.model';
 export class RegisterPage {
   userName = "";
   loaded = false;
-  //Just for debugging if we do not want to enter the name again and again
+  /**
+   * Just for debugging if we do not want to enter the name again and again.
+   * For deployment set this value to false.
+   */
   private hideRegisterPage = false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-    public loader: LoaderProvider, public account: AccountProvider, storage: Storage) {
+    public loader: LoaderProvider, public account: AccountProvider, storage: Storage,
+    public nemSettings: NemSettingsProvider) {
 
     storage.get("ACCOUNT").then((data) => {
       let acc: AccountDetails = JSON.parse(data);
@@ -42,7 +41,7 @@ export class RegisterPage {
         this.userName = acc.name;
         account.setAccountDetails(this.userName, acc.ADRESS, acc.PUBLIC_KEY,
           acc.PRIVATE_KEY).then(() => {
-            this.goToNextPage();
+            this.goToNextPage(false);
           });
       } else {
         this.loaded = true;
@@ -53,31 +52,25 @@ export class RegisterPage {
   continue() {
     if (this.userName !== "") {
       this.createAccount(),
-        this.goToNextPage();
+        this.goToNextPage(true);
     }
   }
 
   /**
-   * This function will only be called on the very first run. Note that this only
-   * applies if we actually deploy this on a real device!
+   * This function creates a new Nem account and stores all account details.
+   * It will only be called on the very first run.
    */
   private createAccount() {
-    let acc = Account.generateNewAccount(NetworkType.MIJIN_TEST);
+    let acc = Account.generateNewAccount(this.nemSettings.networkType);
     this.account.setAccountDetails(this.userName, acc.address.plain(),
-     acc.publicKey, acc.privateKey).then(() => {
-      this.loader.saveAccount(this.account.getSelf()));
-      //create super account, provision namespace and mosaics outside the app (DONE)
-     //call createTransaction from transaction.ts
-     this.nem_transaction.initialSupply();
-    }
+     acc.publicKey, acc.privateKey).then(() => this.loader.saveAccount(this.account.getSelf()));
     }
 
-
-  private goToNextPage() {
+  private goToNextPage(firstTime: boolean) {
     console.log("continue...");
     this.loader.init().then(() => {
       this.loaded = true;
-      this.navCtrl.push(TabsPage);
+      this.navCtrl.push(TabsPage, firstTime);
       this.navCtrl.setRoot(TabsPage);
     })
   }

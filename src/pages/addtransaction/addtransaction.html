@@ -1,31 +1,32 @@
 <ion-header>
     <ion-navbar color="navbar">
-      <ion-title>Create a new Transaction!</ion-title>
+      <ion-title>Record a new Debt!</ion-title>
     </ion-navbar>
   </ion-header>
   
   <ion-content padding>
     <ion-item>
-      <ion-label floating>Title of Transaction</ion-label>
+      <ion-label floating>Title of Debt</ion-label>
       <ion-input clearInput [(ngModel)]="title"></ion-input>
     </ion-item>
 
     <ion-item>
         <ion-label floating>Amount</ion-label>
-        <ion-input type="number" placeholder="1" color="{{amountOK ? 'primary' : 'danger'}}" clearInput [(ngModel)]="amount"></ion-input>
+        <ion-input type="number" placeholder=1 color="{{amountOK ? 'primary' : 'danger'}}" clearInput [(ngModel)]="amount"></ion-input>
     </ion-item>
 
-    <ion-label style="font-size: 1.5em; margin-top: 4em">List of members</ion-label>
-    <ul>
-      <li *ngFor="let m of members" >{{m}}</li>
-    </ul>
-  
-   <ion-item>
-    <ion-label floating>Address of member</ion-label>
-    <ion-input color="{{memberOK? 'primary' : 'danger'}}" clearInput [(ngModel)]="memberAddress"></ion-input>
-  </ion-item>
-  
-    <button ion-button (click)="addMember()">Add member</button>
-  
+
+  <ion-item>
+    <ion-label>Who owes you?</ion-label>
+    <ionic-selectable item-content
+      [(ngModel)]="selectedMembers"
+      [items]="memberOptions"
+      itemValueField="address"
+      itemTextField="name"
+      [isMultiple]="true"
+      [canSearch]="true"
+      [canClear]="true">
+    </ionic-selectable>
+  </ion-item>  
     <button ion-button full large color="secondary" (click)="submit()">Submit</button>
   </ion-content>

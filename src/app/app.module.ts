@@ -26,6 +26,8 @@ import { RegisterPage } from '../pages/register/register';
 import { NemTransactionProvider } from '../providers/nem/transaction';
 import { NemSettingsProvider } from '../providers/nem/nemsettings';
 import { NemMonitorProvider } from '../providers/nem/monitor';
+import { ChartComponent } from '../components/chart/chart';
+import { IonicSelectableModule } from 'ionic-selectable';
 
 @NgModule({
   declarations: [
@@ -40,13 +42,15 @@ import { NemMonitorProvider } from '../providers/nem/monitor';
     GroupdetailPage,
     AddmemberPage,
     AddtransactionPage,
-    RegisterPage
+    RegisterPage,
+    ChartComponent
   ],
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
     HttpClientModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
+    IonicSelectableModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

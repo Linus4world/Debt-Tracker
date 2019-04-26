@@ -12,7 +12,7 @@ import { LoaderProvider } from '../../providers/loader/loader';
 })
 export class GroupsPage {
 
-  private group_list: Group[];
+  group_list: Group[];
   private nameList: Map<string, Group> = new Map<string, Group>();
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
@@ -35,6 +35,19 @@ export class GroupsPage {
     this.nameList.set(group.name, group);
     console.log('Added group!');
     this.loader.saveGroups(this.group_list);
+  }
+
+  removeGroup(id: string){
+    let new_group_list = [];
+    for(let g of this.group_list){
+      if(g.id !== id){
+        new_group_list.push(g);
+      }
+    }
+    this.group_list = new_group_list;
+    console.log('Removed group!');
+    this.loader.saveGroups(this.group_list);
+    this.loader.updateBalance();
   }
 
 }

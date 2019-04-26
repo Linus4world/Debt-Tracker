@@ -20,7 +20,8 @@ export class NemMonitorProvider {
      */
     public getLatestTransactions(pageSize?: number): Promise<Transaction[]> {
         const accountHttp = new AccountHttp(this.nemSettings.networkURL);
-        const publicAccount = PublicAccount.createFromPublicKey(this.account.getPublicKey(), this.nemSettings.networkType);
+        const publicAccount = PublicAccount.createFromPublicKey(
+            this.account.getPublicKey(), this.nemSettings.networkType);
         if (pageSize === undefined || pageSize < 10 || pageSize > 100) {
             pageSize = 50; // Page size between 10 and 100
         }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
 import { CurrencyProvider } from '../../providers/currency/currency';
@@ -7,13 +7,7 @@ import { AddmemberPage } from '../addmember/addmember';
 import { AddtransactionPage } from '../addtransaction/addtransaction';
 import { LoaderProvider } from '../../providers/loader/loader';
 import { TransferTransaction, Address } from 'nem2-sdk';
-
-/**
- * Generated class for the GroupdetailPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { GroupsPage } from '../groups/groups';
 
 @IonicPage()
 @Component({
@@ -25,23 +19,31 @@ export class GroupdetailPage {
   members: string[] = [];
   transactions: string[] = [];
   loading: boolean = false;
+  friend: boolean;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public account: AccountProvider,
-    public currency: CurrencyProvider, public loader: LoaderProvider) {
+    public currency: CurrencyProvider, public loader: LoaderProvider,
+    private alertCtrl: AlertController) {
      this.group = navParams.get("group");
      this.members = Array.from(this.group.members.keys());
+     this.friend = navParams.get("friend");
+     if(this.friend === undefined){this.friend = false}
   }
 
   ionViewWillEnter(){
     this.update()
   }
 
-  getMemberBalance(memberAdress: string){
+  private getMemberBalance(memberAdress: string): string{
     return this.group.balances.get(memberAdress).toFixed(2) + this.currency.currency
   }
 
-  getOwnBalance(){
+  getOwnBalanceString(): string{
     return this.getMemberBalance(this.account.getAdress());
+  }
+
+  getOwnBalance(): number{
+    return this.group.balances.get(this.account.getAdress());
   }
 
   addTransaction(){
@@ -67,15 +69,39 @@ export class GroupdetailPage {
       let txs = this.loader.getLatestTransactions();
       for(let tx of txs){
         if(tx instanceof TransferTransaction && tx.recipient instanceof Address){
-          this.transactions.push("" + tx.signer.address.plain() + ' => ' + tx.recipient.plain());
+          this.transactions.push("" + tx.signer.address.plain() +' ?=== ' + (tx.mosaics.length/10.0).toFixed() +  ' ===> ' + tx.recipient.plain());
         }
       }
       if(this.transactions.length==0){
         this.transactions.push("No Transactions found!");
-        this.transactions.push("Format: \t [SIGNER ADRESS] => [RECEIPIENT ADDRESS]")
+        this.transactions.push("Format: \t [SIGNER] ?=== [AMOUNT] ===> [RECEIPIENT]")
       }
       this.loading = false;
     })
+  }
+
+  presentConfirm() {
+    let alert = this.alertCtrl.create({
+      title: 'Confirm deletion',
+      message: 'Do you want to leave and delete this group?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => console.log('Cancel clicked')
+        },
+        {
+          text: 'Confirm',
+          handler: () => {
+            console.log('Deleting Group....');
+            let groupPage: GroupsPage = this.navParams.get("groupPage")
+            groupPage.removeGroup(this.group.id);
+            this.navCtrl.pop();
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 
 }
