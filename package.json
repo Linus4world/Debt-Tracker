@@ -20,6 +20,7 @@
     "@angular/http": "^7.2.13",
     "@angular/platform-browser": "7.2.13",
     "@angular/platform-browser-dynamic": "^7.2.13",
+    "@ionic-native/clipboard": "^5.5.0",
     "@ionic-native/core": "^5.4.0",
     "@ionic-native/file": "^5.4.0",
     "@ionic-native/splash-screen": "^5.4.0",
@@ -28,6 +29,7 @@
     "@types/chart.js": "^2.7.52",
     "@types/node": "^11.13.6",
     "chart.js": "^2.8.0",
+    "cordova-clipboard": "1.2.1",
     "cordova-plugin-statusbar": "^2.4.2",
     "cordova-sqlite-storage": "3.2.0",
     "ionic-angular": "^3.9.4",
@@ -49,7 +51,8 @@
     "plugins": {
       "cordova-plugin-file": {},
       "cordova-plugin-statusbar": {},
-      "cordova-sqlite-storage": {}
+      "cordova-sqlite-storage": {},
+      "cordova-clipboard": {}
     }
   }
 }

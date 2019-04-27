@@ -54,7 +54,7 @@ export class DeptOverviewCardComponent {
 
   showGroupDetails(){
     if(this.clickable){
-      this.navCtrl.push(GroupdetailPage, {group: this.group, groupPage: this.groupsPage, friend: this.friend});
+      this.navCtrl.push(GroupdetailPage, {friend: this.friend, groupID: this.group.id});
     }
   }
 

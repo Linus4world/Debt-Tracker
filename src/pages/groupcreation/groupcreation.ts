@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
-import { GroupsPage } from '../groups/groups';
 import { UInt64 } from 'nem2-sdk';
+import { LoaderProvider } from '../../providers/loader/loader';
 
 @IonicPage()
 @Component({
@@ -16,24 +16,20 @@ export class GroupcreationPage {
   members: Array<string> = new Array<string>();
   membersMap: Map<string, string> = new Map<string, string>();
   private nameList: Map<string, Group>;
-
-  private groupPage: GroupsPage;
-
   nameOK: boolean = true;
   membersOK: boolean = true;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-    account: AccountProvider) {
+    account: AccountProvider, private loader: LoaderProvider) {
     this.members.push(account.getName());
     this.membersMap.set(account.getAdress(), account.getName());
-    this.groupPage = navParams.get('groupPage');
     this.nameList = this.navParams.get("map");
   }
 
   addMember() {
     //TODO check address with nem and get name
-    if(this.memberAddress.length > 0){
-      let name = this.memberAddress;
+    if(this.memberAddress.length === 40){
+      let name = 'Member'+ Math.floor(Math.random()*100);
       this.members.push(name);
       this.membersMap.set(this.memberAddress, name);
       this.memberAddress = '';
@@ -63,7 +59,7 @@ export class GroupcreationPage {
         blockHeight: UInt64.fromUint(0)
       }
       console.log(group);
-      this.groupPage.addGroup(group);
+      this.loader.addGroup(group);
       this.navCtrl.pop();
     }
 

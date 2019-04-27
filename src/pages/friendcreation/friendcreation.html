@@ -11,6 +11,7 @@
 </ion-header>
 
 <ion-content padding>
+  <ion-label *ngIf="!inputOK">The Address has to be 40 digits!</ion-label>
   <ion-item>
     <ion-label floating color="{{inputOK? 'primary' : 'danger'}}">Address of friend</ion-label>
     <ion-input id="addressField" clearInput [(ngModel)]="address" required="true"></ion-input>

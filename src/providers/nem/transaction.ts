@@ -1,12 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  Account, Address, Deadline, UInt64, PlainMessage,
-  TransferTransaction, Mosaic, MosaicId, TransactionHttp, AggregateTransaction, SignedTransaction
+  Account, Address, Deadline, PlainMessage,
+  TransferTransaction, TransactionHttp, AggregateTransaction, SignedTransaction, InnerTransaction
 } from 'nem2-sdk';
 import { AccountProvider } from '../account/account';
 import { NemSettingsProvider } from './nemsettings';
 import { ToastController } from 'ionic-angular';
+import { NemMonitorProvider } from './monitor';
+import { ControlMessageType } from '../../models/enums';
+import { InviteMessage, AnswerMessage, MemberMessage, LeaveMessage, InfoMessage } from '../../models/control.model';
 
 
 @Injectable()
@@ -15,95 +18,108 @@ export class NemTransactionProvider {
   private acc: Account;
 
   constructor(public http: HttpClient, public account: AccountProvider, public nemSettings: NemSettingsProvider,
-    public toastCtrl: ToastController) {
+    public toastCtrl: ToastController, public monitor: NemMonitorProvider) {
     console.log('Hello NemTransactionProvider Provider');
+    console.log(account.getPrivateKey());
     this.acc = Account.createFromPrivateKey(account.getPrivateKey(), this.nemSettings.networkType);
   }
 
   /**
-   * Gives user an initial amount of tokens.
+   * Sends a transaction with the given amount to the given receipients
    */
-  public initialSupply() {
-    console.log("Getting initial supply...")
-    //Create Tx
-    let transferTransaction = this.createTransactionObject(this.account.getAdress(),
-      "Initial Supply", this.nemSettings.initialSupply, '')
-    //Sign
-    let superAcc = Account.createFromPrivateKey(this.nemSettings.superAccPrivateKey,
-      this.nemSettings.networkType);
-    let signedTransaction = superAcc.sign(transferTransaction);
-    //Announce to network
-    this.announceTransaction(signedTransaction);
+  public createTransAction(receipients: string[], purpose: string, amount: number, groupID: string){
+    this.sendControlData(receipients, ControlMessageType.INFO, groupID, [this.account.getAdress(), receipients, amount, purpose]);
+  }
+
+    /**
+   * Sends the given control data into to the given receipients
+   * @param receipients 
+   * @param type 
+   * @param groupID 
+   * @param params 
+   */
+  public sendControlData(receipients: string[], type: ControlMessageType, groupID: string, params: any[]) {
+    if (receipients.length == 1) {
+      let tx = this.prepareControlMessage(receipients[0], type, groupID, params);
+      this.announceTransaction(this.acc, this.acc.sign(tx));
+    } else {
+      let txs: InnerTransaction[] = [];
+      for (let receipient of receipients) {
+        let tx = this.prepareControlMessage(receipient, type, groupID, params);
+        txs.push(tx.toAggregate(this.acc.publicAccount));
+        let aggregateTransaction = AggregateTransaction.createComplete(Deadline.create(), txs, this.nemSettings.networkType, []);
+        this.announceTransaction(this.acc, this.acc.sign(aggregateTransaction));
+      }
+    }
   }
 
   /**
-   * Sends the given amount of tokens to the given receipients
-   * @param receipients Array of adresses
-   * @param title purpose of the transaction
-   * @param amount number of tokens sent to the receipients
+   * Creates a transaction that is used to transfer control data
    */
-  public createTransAction(receipients: string[], title: string, amount: number, groupID: string) {
-    if (receipients.length == 1) {
-      this.singleTransaction(receipients[0], title, amount, groupID);
-    } else {
-      this.aggregateTransaction(receipients, title, amount, groupID);
-    }
-  }
-
-  private singleTransaction(receipient: string, title: string, amount: number, groupID: string) {
-    //Create Tx
-    let transferTransaction = this.createTransactionObject(receipient, title, amount, groupID)
-    //Sign
-    console.log("SIGN")
-    let signedTransaction = this.acc.sign(transferTransaction);
-    //Announce to network
-    this.announceTransaction(signedTransaction);
-  }
-
-  private aggregateTransaction(receipients: string[], title: string, amount: number, groupID: string) {
-    //Create txs
-    let txs = [];
-    for (let receipient of receipients) {
-      let tx = this.createTransactionObject(receipient, title, amount, groupID);
-      txs.push(tx.toAggregate(this.acc.publicAccount));
-    }
-    const aggregateTransaction = AggregateTransaction.createComplete(Deadline.create(), txs, this.nemSettings.networkType, []);
-    //Sign
-    const signedTransaction = this.acc.sign(aggregateTransaction);
-    //Announce to network
-    this.announceTransaction(signedTransaction);
-  }
-
-  private createTransactionObject(receipient: string, title: string, amount: number, groupID: string): TransferTransaction {
+  private createControlTransactionObject(receipient: string, type: ControlMessageType, payload: string, groupID: string): TransferTransaction {
     return TransferTransaction.create(
       Deadline.create(),
       Address.createFromRawAddress(receipient),
-      [new Mosaic(new MosaicId(this.nemSettings.mosaicID), UInt64.fromUint(amount))],
-      PlainMessage.create(groupID + ':' + title),
+      [],
+      PlainMessage.create(groupID + '$' + type + '$' + payload),
       this.nemSettings.networkType
     );
   }
 
-  private announceTransaction(signedTransaction: SignedTransaction) {
+  /**
+   * Announces and monitors the status of the given signed transaction.
+   * @param signer Account of the signer
+   * @param signedTransaction the transaction to be announced and monitored
+   */
+  private announceTransaction(signer: Account, signedTransaction: SignedTransaction) {
     const transactionHttp = new TransactionHttp(this.nemSettings.networkURL);
+    this.monitor.monitorTransactionStatus(signer.address, signedTransaction);
     transactionHttp.announce(signedTransaction).subscribe(
-      x => {
-        console.log("Successfully completed transactions! " + x);
-        this.presentToast('Successfully completed transactions!')
-      },
-      err => {
-        console.error('Transaction was not successful! ' + err);
-        this.presentToast('Transaction was not successful!')
-      }
-    );
+      x => console.log(x),
+      error => { console.error(error); this.monitor.presentToast("❌ Transaction failed!") });
   }
 
-  private presentToast(message: string) {
-    let toast = this.toastCtrl.create({
-      message: message,
-      duration: 3000,
-      position: 'bottom'
-    });
-    toast.present();
+  private prepareControlMessage(receipient: string, type: ControlMessageType,
+     groupID: string, params: any[]): TransferTransaction {
+    let payload: any;
+    switch (type) {
+      case ControlMessageType.INVITE:
+        let inviteMessage: InviteMessage = {
+          senderName: this.account.getName(), group: params[0], isGroup: params[1]
+        };
+        payload = inviteMessage;
+        break;
+      case ControlMessageType.ANSWER:
+        let answerMessage: AnswerMessage = {
+          username: this.account.getName(),
+          accept: params[0]
+        }
+        payload = answerMessage;
+        break;
+      case ControlMessageType.MEMBER:
+        let memberMessage: MemberMessage = {
+          username: params[1],
+          address: params[0],
+        }
+        payload = memberMessage;
+        break;
+      case ControlMessageType.LEAVE:
+        let leaveMessage: LeaveMessage = {
+          address: params[0]
+        }
+        payload = leaveMessage;
+        break;
+      case ControlMessageType.INFO:
+        let infoMessage: InfoMessage = {
+          sender: params[0],
+          receipients: params[1],
+          amount: params[2],
+          purpose: params[3]
+        }
+        payload = infoMessage;
+      default:
+        break;
+    }
+    return this.createControlTransactionObject(receipient, type, JSON.stringify(payload), groupID);
   }
 }

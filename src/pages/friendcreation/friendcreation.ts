@@ -1,16 +1,9 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { FriendsPage } from '../friends/friends';
 import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
 import { UInt64 } from 'nem2-sdk';
-
-/**
- * Generated class for the FriendcreationPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { LoaderProvider } from '../../providers/loader/loader';
 
 @IonicPage()
 @Component({
@@ -19,13 +12,12 @@ import { UInt64 } from 'nem2-sdk';
 })
 export class FriendcreationPage {
   address: string = '';
-  friendsPage: FriendsPage;
   inputOK = true;
   @ViewChild('addressField') eRef: ElementRef;
 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public account: AccountProvider) {
-    this.friendsPage = navParams.get('friendsPage');
+  constructor(public navCtrl: NavController, public navParams: NavParams, 
+    public account: AccountProvider, private loader: LoaderProvider) {
   }
 
   ionViewDidLoad() {
@@ -34,7 +26,7 @@ export class FriendcreationPage {
 
   submit(){
     //TODO check address with nem
-    this.inputOK = this.address != '';
+    this.inputOK = this.address.length === 40;
     if(this.inputOK){
       let ID = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       let m = new Map<string,string>();
@@ -51,11 +43,11 @@ export class FriendcreationPage {
         balances: b,
         blockHeight: UInt64.fromUint(0)
       }
-      this.friendsPage.addFriend(f);
+      this.loader.addFriend(f);
       this.navCtrl.pop();
+    }else{
+      console.log('NO!');
     }
-    console.log('NO!');
-    //this.eRef.nativeElement.className = "wrongInput";
   }
 
 }

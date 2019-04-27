@@ -12,7 +12,7 @@
 
 <ion-content padding>
   <ion-item>
-    <ion-label floating color="{{nameOK? 'primary' : 'danger'}}">Name of the group</ion-label>
+    <ion-label floating color="{{groupName.length>0 ? 'primary' : 'danger'}}">Name of the group</ion-label>
     <ion-input clearInput [(ngModel)]="groupName" (ionBlur)="checkInput()"></ion-input>
   </ion-item>
 
@@ -22,7 +22,7 @@
   </ul>
 
  <ion-item>
-  <ion-label floating color="{{nameOK? 'primary' : 'danger'}}">Address of member</ion-label>
+  <ion-label floating color="{{memberAddress.length === 40? 'primary' : 'danger'}}">Address of member</ion-label>
   <ion-input id="address" clearInput [(ngModel)]="memberAddress" (ionBlur)="checkInput()"></ion-input>
 </ion-item>
 

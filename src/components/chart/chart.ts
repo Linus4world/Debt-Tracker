@@ -2,6 +2,7 @@ import { Component, ViewChild, ElementRef, Input } from '@angular/core';
 import { Chart } from 'chart.js';
 import { Group } from '../../models/group.model';
 import { CurrencyProvider } from '../../providers/currency/currency';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'chart',
@@ -13,14 +14,21 @@ export class ChartComponent {
   @ViewChild('chartContainer') chartcontainer: ElementRef;
   @ViewChild('chartcanvas') chartcanvas: ElementRef;
 
-  @Input() group: Group
+  private group: Group;
+  @Input() group$: Observable<Group>;
 
   constructor(public currency: CurrencyProvider) {
     console.log('Hello ChartComponent Component');
   }
 
   ngAfterViewInit() {
-    this.createChart();
+    if(this.group === undefined){
+    this.group$.subscribe((data: Group) => {
+      this.group = data;
+      this.createChart();
+    })
+  }
+    //this.createChart();
   }
 
   createChart() {

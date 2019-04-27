@@ -4,6 +4,7 @@ import { LoaderProvider } from '../../providers/loader/loader';
 import { AccountProvider } from '../../providers/account/account';
 import { CurrencyProvider } from '../../providers/currency/currency';
 import { Group } from '../../models/group.model';
+import { NemReactorProvider } from '../../providers/nem/reactor';
 
 //declare function generate();
 
@@ -18,8 +19,9 @@ export class HomePage {
   group: Group = {id: "", name: "...", members: null, balances: null, blockHeight: null};
 
   constructor(public navCtrl: NavController, public loader: LoaderProvider, 
-    public account: AccountProvider,currency: CurrencyProvider) {
+    public account: AccountProvider,currency: CurrencyProvider, private reactor: NemReactorProvider) {
     this.init();
+    reactor.loadLatestTransactions(loader);
     this.CURRENCY = currency.currency;
   }
 

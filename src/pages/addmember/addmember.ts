@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { GroupdetailPage } from '../groupdetail/groupdetail';
+import { LoaderProvider } from '../../providers/loader/loader';
 
 /**
  * Generated class for the AddmemberPage page.
@@ -16,11 +16,10 @@ import { GroupdetailPage } from '../groupdetail/groupdetail';
 })
 export class AddmemberPage {
   address: string = '';
-  name: string = '';
-  page: GroupdetailPage;
-
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-    this.page = navParams.data;
+  inputOK = true;
+  groupID: string = '';
+  constructor(public navCtrl: NavController, public navParams: NavParams, private loader: LoaderProvider) {
+    this.groupID = navParams.data;
   }
 
   ionViewDidLoad() {
@@ -29,13 +28,13 @@ export class AddmemberPage {
 
   submit() {
     //TODO check address with nem
-    if (this.address !== '' || name !== '') {
-      this.page.addMember(this.address, this.name);
+    this.inputOK=this.address.length === 40;
+    if (this.inputOK) {
+      this.loader.addMember(this.groupID, 'member' + Math.floor(Math.random()*100), this.address);
       this.navCtrl.pop();
     }else{
       console.log('NO!');
     }
-    //this.eRef.nativeElement.className = "wrongInput";
   }
 
 }
