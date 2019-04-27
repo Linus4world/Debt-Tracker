@@ -55,6 +55,7 @@ export class NemReactorProvider {
                 console.log('[WARNING] Group not found! ' + transaction.message.payload)
             } else {
                 this.applyUpdates(group, transaction);
+                loader.update();
             }
         }
     }

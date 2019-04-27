@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { GroupdetailPage } from '../groupdetail/groupdetail';
+import { LoaderProvider } from '../../providers/loader/loader';
 
 /**
  * Generated class for the AddmemberPage page.
@@ -17,10 +17,9 @@ import { GroupdetailPage } from '../groupdetail/groupdetail';
 export class AddmemberPage {
   address: string = '';
   name: string = '';
-  page: GroupdetailPage;
-
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-    this.page = navParams.data;
+  groupID: string = '';
+  constructor(public navCtrl: NavController, public navParams: NavParams, private loader: LoaderProvider) {
+    this.groupID = navParams.data;
   }
 
   ionViewDidLoad() {
@@ -29,8 +28,8 @@ export class AddmemberPage {
 
   submit() {
     //TODO check address with nem
-    if (this.address !== '' || name !== '') {
-      this.page.addMember(this.address, this.name);
+    if (this.address.length === 40 && this.name !== '') {
+      this.loader.addMember(this.groupID, this.name, this.address);
       this.navCtrl.pop();
     }else{
       console.log('NO!');

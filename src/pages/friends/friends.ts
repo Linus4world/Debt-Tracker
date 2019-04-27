@@ -23,6 +23,9 @@ export class FriendsPage {
   constructor(public navCtrl: NavController, public navParams: NavParams,
      public account: AccountProvider, public loader: LoaderProvider) {
       this.friend_list = loader.getFriends();
+      this.loader.friends_list$.subscribe((data: Group[]) => {
+        this.friend_list = data;
+      })
     }
 
   ionViewDidLoad() {
@@ -32,27 +35,8 @@ export class FriendsPage {
     return balances.get(this.account.getAdress());
   }
 
-  public addFriend(friend: Group){
-    this.friend_list.push(friend);
-    console.log('Added friend!');
-    this.loader.saveFriends(this.friend_list);
-  }
-
   createFriend(){
-    this.navCtrl.push(FriendcreationPage, {friendsPage: this});
-  }
-
-  removeGroup(id: string){
-    let new_group_list = [];
-    for(let g of this.friend_list){
-      if(g.id !== id){
-        new_group_list.push(g);
-      }
-    }
-    this.friend_list = new_group_list;
-    console.log('Removed group!');
-    this.loader.saveFriends(this.friend_list);
-    this.loader.updateBalance();
+    this.navCtrl.push(FriendcreationPage);
   }
 
 }

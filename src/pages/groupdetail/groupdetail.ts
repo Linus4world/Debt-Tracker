@@ -7,9 +7,9 @@ import { AddmemberPage } from '../addmember/addmember';
 import { AddtransactionPage } from '../addtransaction/addtransaction';
 import { LoaderProvider } from '../../providers/loader/loader';
 import { TransferTransaction, Address } from 'nem2-sdk';
-import { GroupsPage } from '../groups/groups';
 import { Observable } from 'rxjs';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
+import { updateDate } from 'ionic-angular/umd/util/datetime-util';
 
 @IonicPage()
 @Component({
@@ -18,8 +18,7 @@ import { Clipboard } from '@ionic-native/clipboard/ngx';
 })
 export class GroupdetailPage {
   group: Group;
-  group$: Observable<Group> = null;
-  observer;
+  group$: Observable<Group>;
   members: string[] = [];
   transactions: string[] = [];
   loading: boolean = false;
@@ -29,19 +28,25 @@ export class GroupdetailPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, public account: AccountProvider,
     public currency: CurrencyProvider, public loader: LoaderProvider,
     private alertCtrl: AlertController, private clipboard: Clipboard, private toastCtrl: ToastController) {
-    this.group = navParams.get("group");
-    this.group$ = Observable.create((observer) => {
-      this.observer = observer;
-      observer.next(this.group);
-    });
-    this.members = Array.from(this.group.members.keys());
-    this.memberArray = Array.from(this.group.members.entries());
+
+    this.group$ = loader.registerGroupSubscriber(this.navParams.get("groupID"));
+    this.updateGroup();
     this.friend = navParams.get("friend");
     if (this.friend === undefined) { this.friend = false }
   }
 
   ionViewWillEnter() {
     this.update();
+    this.updateGroup();
+  }
+
+  private updateGroup(){
+    this.group$.subscribe((data: Group) => {
+      console.log("GroupUpdate")
+      this.group = data;
+      this.members = Array.from(this.group.members.keys());
+      this.memberArray = Array.from(this.group.members.entries());
+    });
   }
 
   private getMemberBalance(memberAdress: string): string {
@@ -61,15 +66,7 @@ export class GroupdetailPage {
   }
 
   addPerson() {
-    this.navCtrl.push(AddmemberPage, this);
-  }
-
-  addMember(address: string, name: string) {
-    this.members.push(address);
-    this.memberArray.push([address, name]);
-    this.group.members.set(address, name);
-    this.group.balances.set(address, 0);
-    console.log('added: ' + name);
+    this.navCtrl.push(AddmemberPage, this.group.id);
   }
 
   update() {
@@ -77,7 +74,6 @@ export class GroupdetailPage {
     this.loading = true;
     this.transactions = [];
     this.loader.loadLatestTransactions().then(() => {
-      this.observer.next(this.group);
       let txs = this.loader.getLatestTransactions();
       for (let tx of txs) {
         if (tx instanceof TransferTransaction && tx.recipient instanceof Address) {
@@ -109,8 +105,7 @@ export class GroupdetailPage {
           text: 'Confirm',
           handler: () => {
             console.log('Deleting Group....');
-            let groupPage: GroupsPage = this.navParams.get("groupPage")
-            groupPage.removeGroup(this.group.id);
+            this.loader.removeGroup(this.group.id);
             this.navCtrl.pop();
           }
         }
@@ -135,17 +130,17 @@ export class GroupdetailPage {
     this.clipboard.clear();
   }
 
-      /**
-     * Presents the given toast message to the user for 1.5sec
-     * @param message : Message to be shown
-     */
-    private presentToast(message: string) {
-      let toast = this.toastCtrl.create({
-        message: message,
-        duration: 1500,
-        position: 'top'
-      });
-      toast.present();
-    }
+  /**
+ * Presents the given toast message to the user for 1.5sec
+ * @param message : Message to be shown
+ */
+  private presentToast(message: string) {
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 1500,
+      position: 'top'
+    });
+    toast.present();
+  }
 
 }

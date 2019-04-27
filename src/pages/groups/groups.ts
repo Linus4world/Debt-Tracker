@@ -18,36 +18,19 @@ export class GroupsPage {
   constructor(public navCtrl: NavController, public navParams: NavParams,
     public account: AccountProvider, public loader: LoaderProvider) {
     this.group_list = loader.getGroups();
-    for (let g of this.group_list) {
-      this.nameList.set(g.name, g);
-    }
+    loader.group_list$.subscribe((data: Group[]) => {
+      this.group_list = data;
+      this.nameList.clear();
+      for (let g of this.group_list) {
+        this.nameList.set(g.name, g);
+      }
+    })
   }
 
   ionViewDidLoad() {
   }
 
   createGroup() {
-    this.navCtrl.push(GroupcreationPage, { groupPage: this, map: this.nameList });
+    this.navCtrl.push(GroupcreationPage, {map: this.nameList });
   }
-
-  addGroup(group: Group) {
-    this.group_list.push(group);
-    this.nameList.set(group.name, group);
-    console.log('Added group!');
-    this.loader.saveGroups(this.group_list);
-  }
-
-  removeGroup(id: string){
-    let new_group_list = [];
-    for(let g of this.group_list){
-      if(g.id !== id){
-        new_group_list.push(g);
-      }
-    }
-    this.group_list = new_group_list;
-    console.log('Removed group!');
-    this.loader.saveGroups(this.group_list);
-    this.loader.updateBalance();
-  }
-
 }
