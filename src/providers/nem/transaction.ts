@@ -7,6 +7,7 @@ import {
 import { AccountProvider } from '../account/account';
 import { NemSettingsProvider } from './nemsettings';
 import { ToastController } from 'ionic-angular';
+import { NemMonitorProvider } from './monitor';
 
 
 @Injectable()
@@ -15,13 +16,13 @@ export class NemTransactionProvider {
   private acc: Account;
 
   constructor(public http: HttpClient, public account: AccountProvider, public nemSettings: NemSettingsProvider,
-    public toastCtrl: ToastController) {
+    public toastCtrl: ToastController, public monitor: NemMonitorProvider) {
     console.log('Hello NemTransactionProvider Provider');
     this.acc = Account.createFromPrivateKey(account.getPrivateKey(), this.nemSettings.networkType);
   }
 
   /**
-   * Gives user an initial amount of tokens.
+   * Gives user an initial amount of tokens, sent from the super account specified in the NemSettingsProvider
    */
   public initialSupply() {
     console.log("Getting initial supply...")
@@ -33,7 +34,7 @@ export class NemTransactionProvider {
       this.nemSettings.networkType);
     let signedTransaction = superAcc.sign(transferTransaction);
     //Announce to network
-    this.announceTransaction(signedTransaction);
+    this.announceTransaction(superAcc, signedTransaction);
   }
 
   /**
@@ -50,6 +51,9 @@ export class NemTransactionProvider {
     }
   }
 
+  /**
+   * Sends a new TransferTransaction with only one receipient
+   */
   private singleTransaction(receipient: string, title: string, amount: number, groupID: string) {
     //Create Tx
     let transferTransaction = this.createTransactionObject(receipient, title, amount, groupID)
@@ -57,9 +61,12 @@ export class NemTransactionProvider {
     console.log("SIGN")
     let signedTransaction = this.acc.sign(transferTransaction);
     //Announce to network
-    this.announceTransaction(signedTransaction);
+    this.announceTransaction(this.acc, signedTransaction);
   }
 
+  /**
+   * Sends a new aggregated TransferTransaction with multiple receipients
+   */
   private aggregateTransaction(receipients: string[], title: string, amount: number, groupID: string) {
     //Create txs
     let txs = [];
@@ -71,9 +78,13 @@ export class NemTransactionProvider {
     //Sign
     const signedTransaction = this.acc.sign(aggregateTransaction);
     //Announce to network
-    this.announceTransaction(signedTransaction);
+    this.announceTransaction(this.acc, signedTransaction);
   }
 
+  /**
+   * Creates a new TransferTransaction
+   * @returns TransferTransaction with the given parameters
+   */
   private createTransactionObject(receipient: string, title: string, amount: number, groupID: string): TransferTransaction {
     return TransferTransaction.create(
       Deadline.create(),
@@ -84,26 +95,16 @@ export class NemTransactionProvider {
     );
   }
 
-  private announceTransaction(signedTransaction: SignedTransaction) {
+  /**
+   * Announces and monitors the status of the given signed transaction.
+   * @param signer Account of the signer
+   * @param signedTransaction the transaction to be announced and monitored
+   */
+  private announceTransaction(signer: Account, signedTransaction: SignedTransaction) {
     const transactionHttp = new TransactionHttp(this.nemSettings.networkURL);
+    this.monitor.monitorTransactionStatus(signer.address, signedTransaction);
     transactionHttp.announce(signedTransaction).subscribe(
-      x => {
-        console.log("Successfully completed transactions! " + x);
-        this.presentToast('Successfully completed transactions!')
-      },
-      err => {
-        console.error('Transaction was not successful! ' + err);
-        this.presentToast('Transaction was not successful!')
-      }
-    );
-  }
-
-  private presentToast(message: string) {
-    let toast = this.toastCtrl.create({
-      message: message,
-      duration: 3000,
-      position: 'bottom'
-    });
-    toast.present();
+      x => console.log(x),
+      error => {console.error(error); this.monitor.presentToast("❌ Transaction failed!")});
   }
 }

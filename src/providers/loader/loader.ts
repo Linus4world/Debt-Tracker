@@ -174,7 +174,7 @@ export class LoaderProvider {
     if (tx.recipient instanceof Address) {
       to = tx.recipient.plain();
     }
-    let amount = tx.mosaics.length/10; //TODO Have to validate this
+    let amount = tx.mosaics.length/10.00; //TODO Have to validate this
 
     //Apply changes
     let oldBalance = group.balances.get(from);

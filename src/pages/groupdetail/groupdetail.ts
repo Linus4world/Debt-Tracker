@@ -70,11 +70,14 @@ export class GroupdetailPage {
       for(let tx of txs){
         if(tx instanceof TransferTransaction && tx.recipient instanceof Address){
           this.transactions.push("" + tx.signer.address.plain() +' ?=== ' + (tx.mosaics.length/10.0).toFixed() +  ' ===> ' + tx.recipient.plain());
+          this.transactions.push('Purpose: ' + tx.message.payload.split(':')[1]);
         }
       }
       if(this.transactions.length==0){
         this.transactions.push("No Transactions found!");
-        this.transactions.push("Format: \t [SIGNER] ?=== [AMOUNT] ===> [RECEIPIENT]")
+        this.transactions.push("Format:");
+        this.transactions.push('[SIGNER] ?=== [AMOUNT] ===> [RECEIPIENT]');
+        this.transactions.push('Purpose: [MESSAGE]')
       }
       this.loading = false;
     })

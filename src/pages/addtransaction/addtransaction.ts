@@ -51,6 +51,7 @@ export class AddtransactionPage {
   }
 
   private createTransaction(){
+    this.amount = Math.floor(this.amount*10);
     this.nemTransaction.createTransAction(this.members, this.title, this.amount, this.group.id);
   }
 
