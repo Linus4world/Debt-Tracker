@@ -11,8 +11,8 @@
     </ion-item>
 
     <ion-item>
-        <ion-label floating>Amount</ion-label>
-        <ion-input type="number" placeholder=1 color="{{amountOK ? 'primary' : 'danger'}}" clearInput [(ngModel)]="amount"></ion-input>
+        <ion-label floating>Amount in {{currencyProvider.currency}}</ion-label>
+        <ion-input type="number" color="{{amountOK ? 'primary' : 'danger'}}" clearInput [(ngModel)]="amount"></ion-input>
     </ion-item>
 
 

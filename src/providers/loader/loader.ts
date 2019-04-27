@@ -6,8 +6,9 @@ import { Observable } from 'rxjs';
 import { AccountDetails } from '../../models/accountdetails.model';
 import { AccountProvider } from '../account/account';
 import { NemMonitorProvider } from '../nem/monitor';
-import { TransferTransaction, Address, UInt64, Transaction, AggregateTransaction } from 'nem2-sdk';
+import { UInt64, Transaction } from 'nem2-sdk';
 import { GroupStorage } from '../../models/groupstorage';
+import { NemReactorProvider } from '../nem/reactor';
 
 
 @Injectable()
@@ -24,7 +25,6 @@ export class LoaderProvider {
 
   private groups: Array<Group> = [];
   private friends: Array<Group> = [];
-  private latestTransactions: Transaction[] = [];
 
   private self: AccountDetails;
 
@@ -41,7 +41,7 @@ export class LoaderProvider {
   private readonly ACCOUNT_KEY = 'ACCOUNT';
 
   constructor(public http: HttpClient,
-    public storage: Storage, public account: AccountProvider, public monitor: NemMonitorProvider) {
+    public storage: Storage, public account: AccountProvider, public monitor: NemMonitorProvider, private reactor: NemReactorProvider) {
 
   }
 
@@ -81,7 +81,7 @@ export class LoaderProvider {
   }
 
   public getLatestTransactions(): Transaction[] {
-    return this.latestTransactions;
+    return this.reactor.getLatestTransactions();
   }
 
   private getOverallBalance() {
@@ -108,37 +108,10 @@ export class LoaderProvider {
   }
 
   public loadLatestTransactions(): Promise<void> {
-    return this.monitor.getLatestTransactions().then(
-      (transactions) => {
-        if (transactions === null) { return }
-        this.latestTransactions = transactions;
-        for (let t of transactions) {
-          if (t instanceof TransferTransaction) {
-            //Check if this is a message for the user
-            let groupID = t.message.payload.split(':')[0];
-            let group = this.getGroup(groupID);
-            if (group === null) { console.log('[WARNING] Group not found! ' + t.message.payload); return }
-            this.applyUpdates(group, t);
-          }else if(t instanceof AggregateTransaction){
-            for(let at of t.innerTransactions){
-              if(at instanceof TransferTransaction){
-                //Check if this is a message for the user
-                let groupID = at.message.payload.split(':')[0];
-                let group = this.getGroup(groupID);
-                if (group === null) { console.log('[WARNING] Group not found! ' + at.message.payload); return }
-                this.applyUpdates(group, at);
-              }
-            }
-          }
-        }
-      },
-      (err) => {
-        console.log('[ERROR] while loading latest Transactions: ' + err);
-      }
-    )
+    return this.reactor.loadLatestTransactions(this);
   }
 
-  private getGroup(groupID: string): Group {
+  public getGroup(groupID: string): Group {
     if (this.groups !== undefined && this.groups !== null) {
       for (let g of this.groups) {
         if (g.id === groupID) { return g }
@@ -146,35 +119,6 @@ export class LoaderProvider {
     }
     return null;
   }
-
-  /**
-   * Applies the changes of the given tx
-   * @param TransferTransaction to be applied
-   */
-  private applyUpdates(group: Group, tx: TransferTransaction) {
-    //Check if changes were applied before
-    if (tx.transactionInfo.height <= group.blockHeight) { return }
-
-    //Get information
-    let from = tx.signer.address.plain();
-    let to = '';
-    if (tx.recipient instanceof Address) {
-      to = tx.recipient.plain();
-    }
-    let amount = tx.mosaics.length/10.00; //TODO Have to validate this
-
-    //Apply changes
-    let oldBalance = group.balances.get(from);
-    if (oldBalance == null) { console.log('[ERROR] receipient ' + from + ' not found!'); return }
-    group.balances.set(from, oldBalance + amount);
-
-    oldBalance = group.balances.get(to);
-    if (oldBalance == null) { console.log('[ERROR] receipient ' + to + ' not found!'); return }
-    group.balances.set(to, oldBalance - amount);
-    console.log('[SUCCESS] ' + from + ' ==> ' + to);
-  }
-
-
 
   //LOADING
 

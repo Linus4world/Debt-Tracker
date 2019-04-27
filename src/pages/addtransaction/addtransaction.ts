@@ -4,6 +4,7 @@ import { Group } from '../../models/group.model';
 import { NemTransactionProvider } from '../../providers/nem/transaction';
 import { MemberSearch } from '../../models/membersearch.model';
 import { AccountProvider } from '../../providers/account/account';
+import { CurrencyProvider } from '../../providers/currency/currency';
 
 @IonicPage()
 @Component({
@@ -20,7 +21,8 @@ export class AddtransactionPage {
   amountOK = true;
   memberOK = true;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public nemTransaction: NemTransactionProvider,
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+     private nemTransaction: NemTransactionProvider, public currencyProvider: CurrencyProvider,
     account: AccountProvider) {
     this.group = navParams.data;
     this.group.members.forEach((value, key, _) => {
@@ -51,7 +53,7 @@ export class AddtransactionPage {
   }
 
   private createTransaction(){
-    this.amount = Math.floor(this.amount*10);
+    this.amount = Math.floor(this.amount*100);
     this.nemTransaction.createTransAction(this.members, this.title, this.amount, this.group.id);
   }
 
