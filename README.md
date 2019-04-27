@@ -57,5 +57,18 @@ To really make this app work there is also the need of a private server that wil
 - etc.
 For development it also might be usefull to use mock data. This is provided by the loader.ts class.
 
+## Highlights of this version:
+
+From now on, there is no need for a private server! You also do not need a super account or mosaics, since all transactions are transferred through messages. All control data is handled by a communication system trough the Blockchain. These messages handle: 
+- Invitation of a new member into a group
+- Acceptance of Invitation
+- Info that a new member has joined the group
+- Record of new debts
+- Leave of a member
+
+Furthermore, the details page now features a much more pleasant look, including charts and member chips.
+
+*Note* Only the record of debt messages are sent right now. All other messages can be handled, but are not sent yet. To see the app working even without a Blockchain, members are added instantly without waiting for an acceptance.
+
 ## Troubleshooting
 ```npm install``` often leads to problems, depending on your machine. Make sure to have the newest versions of NodeJS, Ionic and Cordova. Sometimes you also have to install additional programs or dependencies. In case you are not able to run the project please contact me directly.
