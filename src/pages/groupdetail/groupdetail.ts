@@ -8,6 +8,7 @@ import { AddtransactionPage } from '../addtransaction/addtransaction';
 import { LoaderProvider } from '../../providers/loader/loader';
 import { TransferTransaction, Address } from 'nem2-sdk';
 import { GroupsPage } from '../groups/groups';
+import { Observable } from 'rxjs';
 
 @IonicPage()
 @Component({
@@ -16,6 +17,8 @@ import { GroupsPage } from '../groups/groups';
 })
 export class GroupdetailPage {  
   group: Group;
+  group$: Observable<Group> = null;
+  observer;
   members: string[] = [];
   transactions: string[] = [];
   loading: boolean = false;
@@ -25,13 +28,17 @@ export class GroupdetailPage {
     public currency: CurrencyProvider, public loader: LoaderProvider,
     private alertCtrl: AlertController) {
      this.group = navParams.get("group");
+     this.group$ = Observable.create((observer) => {
+        this.observer = observer;
+        observer.next(this.group);
+     });
      this.members = Array.from(this.group.members.keys());
      this.friend = navParams.get("friend");
      if(this.friend === undefined){this.friend = false}
   }
 
   ionViewWillEnter(){
-    this.update()
+    this.update();
   }
 
   private getMemberBalance(memberAdress: string): string{
@@ -66,6 +73,7 @@ export class GroupdetailPage {
     this.loading = true;
     this.transactions = [];
     this.loader.loadLatestTransactions().then(() => {
+      this.observer.next(this.group);
       let txs = this.loader.getLatestTransactions();
       for(let tx of txs){
         if(tx instanceof TransferTransaction && tx.recipient instanceof Address){

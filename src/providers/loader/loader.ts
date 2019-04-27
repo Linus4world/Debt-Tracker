@@ -8,7 +8,6 @@ import { AccountProvider } from '../account/account';
 import { NemMonitorProvider } from '../nem/monitor';
 import { TransferTransaction, Address, UInt64, Transaction, AggregateTransaction } from 'nem2-sdk';
 import { GroupStorage } from '../../models/groupstorage';
-import { ToastController } from 'ionic-angular';
 
 
 @Injectable()
@@ -42,8 +41,7 @@ export class LoaderProvider {
   private readonly ACCOUNT_KEY = 'ACCOUNT';
 
   constructor(public http: HttpClient,
-    public storage: Storage, public account: AccountProvider, public monitor: NemMonitorProvider,
-    public toastCtrl: ToastController) {
+    public storage: Storage, public account: AccountProvider, public monitor: NemMonitorProvider) {
 
   }
 
@@ -63,16 +61,6 @@ export class LoaderProvider {
         this.loadLatestTransactions()
       }).then(() => console.log('Everything is loaded!'));
   }
-
-  private presentToast(message: string) {
-    let toast = this.toastCtrl.create({
-      message: message,
-      duration: 3000,
-      position: 'bottom'
-    });
-    toast.present();
-  }
-
 
   public getGroups() {
     if (this.groups !== []) {
@@ -113,7 +101,6 @@ export class LoaderProvider {
       this.groups = groups;
     }
     console.log('Updating balances...');
-    console.log(this.groups);
     this.overAllBalance = this.getOverallBalance();
     if (this.observer !== undefined) {
       this.observer.next(this.overAllBalance);
