@@ -1,7 +1,9 @@
+import { GroupStorage } from "./groupstorage";
+
 export interface InviteMessage{
     senderName: string,
-    groupName: string,
-    isGroup: boolean 
+    isGroup: boolean,
+    group: GroupStorage
 }
 
 export interface AnswerMessage{

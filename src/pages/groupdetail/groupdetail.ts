@@ -9,7 +9,7 @@ import { LoaderProvider } from '../../providers/loader/loader';
 import { TransferTransaction, Address } from 'nem2-sdk';
 import { Observable } from 'rxjs';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
-import { updateDate } from 'ionic-angular/umd/util/datetime-util';
+import { NemReactorProvider } from '../../providers/nem/reactor';
 
 @IonicPage()
 @Component({
@@ -27,7 +27,8 @@ export class GroupdetailPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public account: AccountProvider,
     public currency: CurrencyProvider, public loader: LoaderProvider,
-    private alertCtrl: AlertController, private clipboard: Clipboard, private toastCtrl: ToastController) {
+    private alertCtrl: AlertController, private clipboard: Clipboard, private toastCtrl: ToastController,
+    private reactor: NemReactorProvider) {
 
     this.group$ = loader.registerGroupSubscriber(this.navParams.get("groupID"));
     this.updateGroup();
@@ -73,8 +74,8 @@ export class GroupdetailPage {
     console.log('Updating...')
     this.loading = true;
     this.transactions = [];
-    this.loader.loadLatestTransactions().then(() => {
-      let txs = this.loader.getLatestTransactions();
+    this.reactor.loadLatestTransactions(this.loader).then(() => {
+      let txs = this.reactor.getLatestTransactions();
       for (let tx of txs) {
         if (tx instanceof TransferTransaction && tx.recipient instanceof Address) {
           this.transactions.push("" + tx.signer.address.plain() + ' ?=== ' + (tx.mosaics.length / 10.0).toFixed() + ' ===> ' + tx.recipient.plain());

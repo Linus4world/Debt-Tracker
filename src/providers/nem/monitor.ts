@@ -13,7 +13,7 @@ export class NemMonitorProvider {
 
     constructor(public http: HttpClient, public account: AccountProvider, 
         public nemSettings: NemSettingsProvider, public toastCtrl: ToastController) {
-        console.log('Hello NemTransactionProvider Provider');
+        console.log('Hello MonitorProvider Provider');
     }
 
     /**

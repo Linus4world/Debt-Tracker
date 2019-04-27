@@ -28,8 +28,8 @@ export class GroupcreationPage {
 
   addMember() {
     //TODO check address with nem and get name
-    if(this.memberAddress.length > 0){
-      let name = this.memberAddress;
+    if(this.memberAddress.length === 40){
+      let name = 'Member'+ Math.floor(Math.random()*100);
       this.members.push(name);
       this.membersMap.set(this.memberAddress, name);
       this.memberAddress = '';

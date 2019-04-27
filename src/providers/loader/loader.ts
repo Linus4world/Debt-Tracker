@@ -5,10 +5,8 @@ import { Group } from '../../models/group.model';
 import { Observable } from 'rxjs';
 import { AccountDetails } from '../../models/accountdetails.model';
 import { AccountProvider } from '../account/account';
-import { NemMonitorProvider } from '../nem/monitor';
-import { UInt64, Transaction } from 'nem2-sdk';
+import { UInt64 } from 'nem2-sdk';
 import { GroupStorage } from '../../models/groupstorage';
-import { NemReactorProvider } from '../nem/reactor';
 
 
 @Injectable()
@@ -44,8 +42,8 @@ export class LoaderProvider {
   private _friends_list_observer;
 
   constructor(public http: HttpClient,
-    public storage: Storage, public account: AccountProvider, public monitor: NemMonitorProvider, private reactor: NemReactorProvider) {
-
+    public storage: Storage, public account: AccountProvider) {
+      console.log("Hello LoaderProvider")
   }
 
   public init() {
@@ -68,7 +66,6 @@ export class LoaderProvider {
           this._friends_list_observer = observer;
           observer.next(this._friends);
         });
-        this.loadLatestTransactions()
       }).then(() => console.log('Everything is loaded!'));
   }
 
@@ -104,6 +101,16 @@ export class LoaderProvider {
     let g = this.getGroup(groupID);
     g.members.set(address, username);
     g.balances.set(address, 0);
+    this.storeGroups(this.GROUPS_KEY, this._groups);
+    if(groupID === this._observedGroup.id){
+      this._groupSubscriber.next(this._observedGroup);
+    }
+  }
+
+  public removeMember(groupID, address){
+    let g = this.getGroup(groupID);
+    delete g.members[address];
+    delete g.balances[address];
     this.storeGroups(this.GROUPS_KEY, this._groups);
     if(groupID === this._observedGroup.id){
       this._groupSubscriber.next(this._observedGroup);
@@ -155,10 +162,6 @@ export class LoaderProvider {
     }
   }
 
-  public loadLatestTransactions(): Promise<void> {
-    return this.reactor.loadLatestTransactions(this);
-  }
-
   //GET
 
   public getGroups() {
@@ -179,9 +182,6 @@ export class LoaderProvider {
     }
   }
 
-  public getLatestTransactions(): Transaction[] {
-    return this.reactor.getLatestTransactions();
-  }
 
   private getOverallBalance() {
     let overAllBalance = 0;
@@ -283,7 +283,7 @@ export class LoaderProvider {
     }
   }
 
-  private groupStorageToGroup(groupStorage: GroupStorage): Group {
+  public groupStorageToGroup(groupStorage: GroupStorage): Group {
     return (groupStorage === null) ? null : {
       id: groupStorage.id,
       name: groupStorage.name,
@@ -293,7 +293,7 @@ export class LoaderProvider {
     }
   }
 
-  private groupToGroupStorage(group: Group): GroupStorage {
+  public groupToGroupStorage(group: Group): GroupStorage {
     return (group === null) ? null : {
       id: group.id,
       name: group.name,

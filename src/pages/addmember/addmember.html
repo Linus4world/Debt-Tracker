@@ -1,17 +1,14 @@
 <ion-header>
-    <ion-navbar>
-      <ion-title>Add a member to the group!</ion-title>
-    </ion-navbar>
-  </ion-header>
-  
-  <ion-content padding>
-    <ion-item>
-      <ion-label floating>Address of friend</ion-label>
-      <ion-input id="addressField" clearInput [(ngModel)]="address"></ion-input>
-    </ion-item>
-    <ion-item>
-        <ion-label floating>Name of friend</ion-label>
-        <ion-input id="nameField" clearInput [(ngModel)]="name"></ion-input>
-      </ion-item>
-    <button ion-button full large color="secondary" (click)="submit()">Submit</button>
-  </ion-content>
+  <ion-navbar>
+    <ion-title>Add a member to the group!</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-label *ngIf="!inputOK">The Address has to be 40 digits!</ion-label>
+  <ion-item>
+    <ion-label floating color="{{inputOK? 'primary' : 'danger'}}">Address of friend</ion-label>
+    <ion-input id="addressField" clearInput [(ngModel)]="address" required="true"></ion-input>
+  </ion-item>
+  <button ion-button full large color="secondary" (click)="submit()">Submit</button>
+</ion-content>

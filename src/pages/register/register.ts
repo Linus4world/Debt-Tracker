@@ -26,7 +26,6 @@ export class RegisterPage {
   constructor(public navCtrl: NavController, public navParams: NavParams,
     public loader: LoaderProvider, public account: AccountProvider, storage: Storage,
     public nemSettings: NemSettingsProvider) {
-
     storage.get("ACCOUNT").then((data) => {
       let acc: AccountDetails = JSON.parse(data);
       if (this.hideRegisterPage || acc !== null) {

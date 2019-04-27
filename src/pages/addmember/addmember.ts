@@ -16,7 +16,7 @@ import { LoaderProvider } from '../../providers/loader/loader';
 })
 export class AddmemberPage {
   address: string = '';
-  name: string = '';
+  inputOK = true;
   groupID: string = '';
   constructor(public navCtrl: NavController, public navParams: NavParams, private loader: LoaderProvider) {
     this.groupID = navParams.data;
@@ -28,13 +28,13 @@ export class AddmemberPage {
 
   submit() {
     //TODO check address with nem
-    if (this.address.length === 40 && this.name !== '') {
-      this.loader.addMember(this.groupID, this.name, this.address);
+    this.inputOK=this.address.length === 40;
+    if (this.inputOK) {
+      this.loader.addMember(this.groupID, 'member' + Math.floor(Math.random()*100), this.address);
       this.navCtrl.pop();
     }else{
       console.log('NO!');
     }
-    //this.eRef.nativeElement.className = "wrongInput";
   }
 
 }

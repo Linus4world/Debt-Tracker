@@ -6,14 +6,18 @@ import { Transaction, TransferTransaction, AggregateTransaction, Address } from 
 import { LoaderProvider } from "../loader/loader";
 import { Group } from "../../models/group.model";
 import { ControlMessageType } from "../../models/enums";
+import { AlertController } from "ionic-angular";
+import { InviteMessage, AnswerMessage, MemberMessage, LeaveMessage, InfoMessage } from "../../models/control.model";
+import { NemTransactionProvider } from "./transaction";
 
 @Injectable()
 export class NemReactorProvider {
     private latestTransactions: Transaction[] = [];
 
     constructor(public http: HttpClient, public account: AccountProvider,
-        public monitor: NemMonitorProvider) {
-
+        public monitor: NemMonitorProvider, private alertCtrl: AlertController,
+        private transactionProvider: NemTransactionProvider) {
+            console.log("Hello REactorProvider")
     }
 
     public getLatestTransactions(): Transaction[] {
@@ -30,7 +34,9 @@ export class NemReactorProvider {
                         this.handleTransaction(loader, t)
                     } else if (t instanceof AggregateTransaction) {
                         for (let at of t.innerTransactions) {
-                            if (at instanceof TransferTransaction) {
+                            if (at instanceof TransferTransaction &&
+                                at.recipient instanceof Address && 
+                                at.recipient.plain() === this.account.getAdress() ) {
                                 this.handleTransaction(loader, at);
                             }
                         }
@@ -46,62 +52,72 @@ export class NemReactorProvider {
     private handleTransaction(loader: LoaderProvider, transaction: TransferTransaction) {
         let components = transaction.message.payload.split('$');
         let groupID = components[0];
-        let type = components[1];
-        if (type === 'CONTROL') {
-            this.applyControlUpdate(loader, groupID, components[2], components[3])
-        } else {
-            let group = loader.getGroup(groupID);
-            if (group === null) {
-                console.log('[WARNING] Group not found! ' + transaction.message.payload)
-            } else {
-                this.applyUpdates(group, transaction);
-                loader.update();
-            }
+        let group = loader.getGroup(groupID);
+        if(group === null || group.blockHeight < transaction.transactionInfo.height){
+            this.applyControlUpdate(loader, groupID, components[1], components[2], transaction.signer.address.plain());
+            loader.update();
         }
     }
 
-    /**
-     * Applies the changes of the given tx
-     * @param TransferTransaction to be applied
-     */
-    private applyUpdates(group: Group, tx: TransferTransaction) {
-        //Check if changes were applied before
-        if (tx.transactionInfo.height <= group.blockHeight) { return }
-
-        //Get information
-        let from = tx.signer.address.plain();
-        let to = '';
-        if (tx.recipient instanceof Address) {
-            to = tx.recipient.plain();
-        }
-        let amount = tx.mosaics.length / 100.00; //TODO Have to validate this
-
-        //Apply changes
-        let oldBalance = group.balances.get(from);
-        if (oldBalance == null) { console.log('[ERROR] receipient ' + from + ' not found!'); return }
-        group.balances.set(from, oldBalance + amount);
-
-        oldBalance = group.balances.get(to);
-        if (oldBalance == null) { console.log('[ERROR] receipient ' + to + ' not found!'); return }
-        group.balances.set(to, oldBalance - amount);
-        console.log('[SUCCESS] ' + from + ' ==> ' + to);
-    }
-
-    private applyControlUpdate(loader: LoaderProvider, groupID: string, type: string, payload: string) {
+    private applyControlUpdate(loader: LoaderProvider, groupID: string, type: string, payload: string, sender: string) {
         switch (type) {
             case ControlMessageType.INVITE:
-                //TODO
+                let invitationMessage: InviteMessage = JSON.parse(payload);
+                let group :Group = loader.groupStorageToGroup(invitationMessage.group);
+                this.presentConfirm("Do you want to accept "+invitationMessage.senderName+'\'s ' 
+                + (invitationMessage.isGroup? 'group ': 'friend ') +'invitation?', 
+                (invitationMessage.isGroup? function(){loader.addGroup(group)} : function(){loader.addFriend(group)} ));
                 break;
             case ControlMessageType.ANSWER:
-                //loader.getGroup(groupID) TODO
+                let answerMessage: AnswerMessage = JSON.parse(payload);
+                if(answerMessage.accept){
+                    let receipients: string[] = Array.from(loader.getGroup(groupID).members.keys());
+                    this.transactionProvider.sendControlData(receipients, ControlMessageType.MEMBER, groupID, [answerMessage.username, sender]);
+                    loader.addMember(groupID, answerMessage.username, sender);
+                }
                 break;
             case ControlMessageType.MEMBER:
+                let memberMessage: MemberMessage = JSON.parse(payload);
+                loader.addMember(groupID, memberMessage.address, memberMessage.username);
                 break;
             case ControlMessageType.LEAVE:
+                let leaveMessage: LeaveMessage = JSON.parse(payload);
+                loader.removeMember(groupID, leaveMessage.address);
                 break;
             case ControlMessageType.INFO:
+                let infoMessage: InfoMessage = JSON.parse(payload);
+                this.applyTransaction(groupID, loader, infoMessage)
             default:
                 break;
         }
     }
+
+    applyTransaction(groupID, loader: LoaderProvider, infoMessage: InfoMessage){
+        let g: Group = loader.getGroup(groupID);
+        let oldBalance = g.balances.get(infoMessage.sender);
+        g.balances.set(infoMessage.sender, oldBalance + infoMessage.amount);
+        for(let receipient of infoMessage.receipients){
+            oldBalance = g.balances.get(receipient);
+            g.balances.set(receipient, oldBalance - infoMessage.amount)
+        }
+    }
+
+    presentConfirm(message:string, callback: Function) {
+        let alert = this.alertCtrl.create({
+          title: 'Accept Invitation',
+          message: message,
+          buttons: [
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => console.log('Cancel clicked')
+            },
+            {
+              text: 'Confirm',
+              handler: () => callback()
+            }
+          ]
+        });
+        alert.present();
+      }
 }
