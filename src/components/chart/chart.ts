@@ -19,11 +19,9 @@ export class ChartComponent {
 
   constructor(public currency: CurrencyProvider) {
     console.log('Hello ChartComponent Component');
-    console.log(this.group$);
   }
 
   ngAfterViewInit() {
-    console.log("######ASDASD######");
     if(this.group === undefined){
     this.group$.subscribe((data: Group) => {
       this.group = data;

@@ -28,6 +28,7 @@ import { NemSettingsProvider } from '../providers/nem/nemsettings';
 import { NemMonitorProvider } from '../providers/nem/monitor';
 import { ChartComponent } from '../components/chart/chart';
 import { IonicSelectableModule } from 'ionic-selectable';
+import { Clipboard } from '@ionic-native/clipboard/ngx';
 
 @NgModule({
   declarations: [
@@ -43,14 +44,15 @@ import { IonicSelectableModule } from 'ionic-selectable';
     AddmemberPage,
     AddtransactionPage,
     RegisterPage,
-    ChartComponent
+    ChartComponent,
   ],
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
     HttpClientModule,
     IonicStorageModule.forRoot(),
-    IonicSelectableModule
+    IonicSelectableModule,
+
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -76,7 +78,8 @@ import { IonicSelectableModule } from 'ionic-selectable';
     LoaderProvider,
     NemTransactionProvider,
     NemSettingsProvider,
-    NemMonitorProvider
+    NemMonitorProvider,
+    Clipboard
   ]
 })
 export class AppModule {}

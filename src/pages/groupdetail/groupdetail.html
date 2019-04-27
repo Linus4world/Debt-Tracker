@@ -1,61 +1,77 @@
-
 <ion-header>
   <ion-navbar color="navbar">
     <ion-title>{{group.name}}</ion-title>
     <ion-buttons right>
-      <button ion-button clear (click)="update()" icon-only><ion-icon name="refresh"></ion-icon></button>
+      <button ion-button clear (click)="update()" icon-only>
+        <ion-icon name="refresh"></ion-icon>
+      </button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
   <div *ngIf="getOwnBalance() < 0" class="flex-box">
-      <ion-icon name="alert" style="color: red" class="flex-center"></ion-icon>
-      <p class="flex-center balance-text">
-        You owe: {{getOwnBalanceString()}}
-      </p>
+    <ion-icon name="alert" style="color: red" class="flex-center"></ion-icon>
+    <p class="flex-center balance-text">
+      You owe: {{getOwnBalanceString()}}
+    </p>
   </div>
 
-    <div *ngIf="getOwnBalance() > 0" class="flex-box">
-      <ion-icon  name="alert" style="color: orange" class="flex-center"></ion-icon>
-      <p class="flex-center balance-text">
-        You are owed: {{getOwnBalanceString()}}
-      </p>
-    </div>
+  <div *ngIf="getOwnBalance() > 0" class="flex-box">
+    <ion-icon name="alert" style="color: orange" class="flex-center"></ion-icon>
+    <p class="flex-center balance-text">
+      You are owed: {{getOwnBalanceString()}}
+    </p>
+  </div>
 
-    <div *ngIf="getOwnBalance() == 0" class="flex-box">
-      <ion-icon name="checkmark-circle-outline" style="color: darkgreen" class="flex-center"></ion-icon>
-      <p class="flex-center balance-text">
-        You are quitt!
-      </p>
-    </div>
-  
+  <div *ngIf="getOwnBalance() == 0" class="flex-box">
+    <ion-icon name="checkmark-circle-outline" style="color: darkgreen" class="flex-center"></ion-icon>
+    <p class="flex-center balance-text">
+      You are quitt!
+    </p>
+  </div>
+
   <chart [group$]="group$"></chart>
+
+  <h1>Members</h1>
+  <ion-chip *ngFor="let member of memberArray">
+    <button ion-button (click)="copyAddress(member[0])">
+      <ion-icon *ngIf="group.balances.get(member[0]) < 0" name="alert" style="color: red"></ion-icon>
+      <ion-icon *ngIf="group.balances.get(member[0]) > 0" name="alert" style="color: orange"></ion-icon>
+      <ion-icon *ngIf="group.balances.get(member[0]) == 0" name="checkmark-circle-outline" style="color: darkgreen">
+      </ion-icon>
+    </button>
+      <ion-label>{{member[1]}}</ion-label>
+  </ion-chip>
 
   <h2>Recent transactions:</h2>
   <div class="flex-container">
-      <ion-icon name="person"></ion-icon>
-      <ion-icon name="arrow-round-forward"></ion-icon>
-      <ion-icon name="people"></ion-icon>
-    </div>
+    <ion-icon name="person"></ion-icon>
+    <ion-icon name="arrow-round-forward"></ion-icon>
+    <ion-icon name="people"></ion-icon>
+  </div>
   <div ion-label text-center>
-  <ion-spinner text-center name="dots" *ngIf="loading"></ion-spinner>
+    <ion-spinner text-center name="dots" *ngIf="loading"></ion-spinner>
   </div>
   <p ion-label text-center *ngFor="let t of transactions">{{t}}</p>
 
 
   <ion-fab bottom right>
     <button ion-fab>
-        <ion-icon name="add"></ion-icon>
+      <ion-icon name="add"></ion-icon>
     </button>
     <ion-fab-list side="top">
-      <button ion-fab (click)="addTransaction()"><ion-icon name="logo-usd"></ion-icon></button>
-      <button *ngIf="!friend" ion-fab (click)="addPerson()"><ion-icon name="person-add"></ion-icon></button>      
-      </ion-fab-list>
+      <button ion-fab (click)="addTransaction()">
+        <ion-icon name="logo-usd"></ion-icon>
+      </button>
+      <button *ngIf="!friend" ion-fab (click)="addPerson()">
+        <ion-icon name="person-add"></ion-icon>
+      </button>
+    </ion-fab-list>
   </ion-fab>
   <ion-fab bottom left>
     <button ion-fab icon-only (click)="presentConfirm()">
-        <ion-icon name="trash"></ion-icon>
+      <ion-icon name="trash"></ion-icon>
     </button>
   </ion-fab>
 </ion-content>
