@@ -28,7 +28,7 @@ export class NemTransactionProvider {
    * Sends a transaction with the given amount to the given receipients
    */
   public createTransAction(receipients: string[], purpose: string, amount: number, groupID: string){
-    this.sendControlData(receipients, ControlMessageType.INFO, groupID, [this.account.getAdress(), receipients, amount, purpose]);
+    this.sendControlData(receipients, ControlMessageType.TX, groupID, [this.account.getAdress(), receipients, amount, purpose]);
   }
 
     /**
@@ -109,7 +109,7 @@ export class NemTransactionProvider {
         }
         payload = leaveMessage;
         break;
-      case ControlMessageType.INFO:
+      case ControlMessageType.TX:
         let infoMessage: InfoMessage = {
           sender: params[0],
           receipients: params[1],

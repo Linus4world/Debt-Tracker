@@ -29,7 +29,8 @@ import { NemMonitorProvider } from '../providers/nem/monitor';
 import { ChartComponent } from '../components/chart/chart';
 import { IonicSelectableModule } from 'ionic-selectable';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
-import { NemReactorProvider } from '../providers/nem/reactor';
+import { NemLoaderProvider } from '../providers/nem/nemloader';
+import { NemAPI } from '../providers/nem/nemapi';
 
 @NgModule({
   declarations: [
@@ -81,7 +82,8 @@ import { NemReactorProvider } from '../providers/nem/reactor';
     NemSettingsProvider,
     NemMonitorProvider,
     Clipboard,
-    NemReactorProvider
+    NemLoaderProvider,
+    NemAPI
   ]
 })
 export class AppModule {}

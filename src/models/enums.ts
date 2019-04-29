@@ -9,5 +9,5 @@ export enum ControlMessageType{
     ANSWER = 'ANSWER',
     MEMBER = 'MEMBER',
     LEAVE = 'LEAVE',
-    INFO = 'INFO'
+    TX = 'TX'
 }

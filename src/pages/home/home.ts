@@ -4,7 +4,8 @@ import { LoaderProvider } from '../../providers/loader/loader';
 import { AccountProvider } from '../../providers/account/account';
 import { CurrencyProvider } from '../../providers/currency/currency';
 import { Group } from '../../models/group.model';
-import { NemReactorProvider } from '../../providers/nem/reactor';
+import { NemLoaderProvider } from '../../providers/nem/nemloader';
+import { NemAPI } from '../../providers/nem/nemapi';
 
 //declare function generate();
 
@@ -19,9 +20,9 @@ export class HomePage {
   group: Group = {id: "", name: "...", members: null, balances: null, blockHeight: null};
 
   constructor(public navCtrl: NavController, public loader: LoaderProvider, 
-    public account: AccountProvider,currency: CurrencyProvider, private reactor: NemReactorProvider) {
+    public account: AccountProvider,currency: CurrencyProvider, nemAPI: NemAPI) {
     this.init();
-    reactor.loadLatestTransactions(loader);
+    nemAPI.loadUpdates();
     this.CURRENCY = currency.currency;
   }
 

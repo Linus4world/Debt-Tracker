@@ -17,27 +17,6 @@ export class NemMonitorProvider {
     }
 
     /**
-     * Querries the blockchain for the last 50 or pageSize transactions of this account.
-     * @param pageSize (Optional) How many transactions should be querried. Between 10 and 100
-     * @returns A Promise reloving in an Array of Transactions
-     */
-    public getLatestTransactions(pageSize?: number): Promise<Transaction[]> {
-        const accountHttp = new AccountHttp(this.nemSettings.networkURL);
-        const publicAccount = PublicAccount.createFromPublicKey(
-            this.account.getPublicKey(), this.nemSettings.networkType);
-        if (pageSize === undefined || pageSize < 10 || pageSize > 100) {
-            pageSize = 50; // Page size between 10 and 100
-        }
-
-        return new Promise((res, rej) => {
-            accountHttp.transactions(publicAccount, new QueryParams(pageSize)).subscribe(
-                transactions => res(transactions),
-                err => rej(err)
-            )
-        });
-    }
-
-    /**
      * After a new transaction has been announced, this function monitors if it is accepted in the blockchain.
      * Code following the offical guide at https://nemtech.github.io/guides/transaction/monitoring-a-transaction-status.html
      */
