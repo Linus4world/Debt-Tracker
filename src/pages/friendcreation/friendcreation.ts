@@ -4,6 +4,7 @@ import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
 import { UInt64 } from 'nem2-sdk';
 import { LoaderProvider } from '../../providers/loader/loader';
+import { LocalDateTime } from 'js-joda';
 
 @IonicPage()
 @Component({
@@ -41,7 +42,7 @@ export class FriendcreationPage {
         name: m.get(this.address),
         members: m,
         balances: b,
-        blockHeight: UInt64.fromUint(0)
+        deadline: LocalDateTime.now()
       }
       this.loader.addFriend(f);
       this.navCtrl.pop();

@@ -1,9 +1,8 @@
-import { UInt64 } from "nem2-sdk";
-
+import { LocalDateTime } from "js-joda";
 export interface Group{
     id: string,
     name: string,
     members: Map<string,string>,
     balances: Map<string, number>,
-    blockHeight: UInt64
+    deadline: LocalDateTime
 }

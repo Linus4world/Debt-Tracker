@@ -5,13 +5,15 @@ import { ControlMessageType } from "../../models/enums";
 import { LoaderProvider } from "../loader/loader";
 import { NemLoaderProvider } from "./nemloader";
 import { AlertController } from "ionic-angular";
-import { InviteMessage, AnswerMessage, MemberMessage, LeaveMessage, InfoMessage } from "../../models/control.model";
-import { TransferTransaction, UInt64, Transaction } from "nem2-sdk";
+import { InviteMessage, AnswerMessage, MemberMessage, LeaveMessage, TxMessage } from "../../models/control.model";
+import { Transaction, PublicAccount } from "nem2-sdk";
+import { AccountProvider } from "../account/account";
+import { LocalDateTime } from "js-joda";
 
 @Injectable()
 export class NemAPI {
     constructor(private nemTransaction: NemTransactionProvider, private loader: LoaderProvider,
-        private nemLoader: NemLoaderProvider, private alertCtrl: AlertController){
+        private nemLoader: NemLoaderProvider, private alertCtrl: AlertController, private account: AccountProvider){
 
     }
 
@@ -39,7 +41,7 @@ export class NemAPI {
      * @param receipients List of addresses that are part of the transaction
      */
     public recordDebt(receipients: string[], group: Group, amount: number, purpose: string){
-        this.nemTransaction.sendControlData(Array.from(group.members.keys()), ControlMessageType.TX, group.id, [receipients, amount, purpose])
+        this.nemTransaction.sendControlData(Array.from(group.members.keys()), ControlMessageType.TX, group.id, [this.account.getAdress(), receipients, amount, purpose])
     }
     /**
      * Answers an invitation message, adds the group to the list and listens for new incomming
@@ -61,10 +63,12 @@ export class NemAPI {
 
     /**
      * Loads latest Transactions and process them.
+     * @param (Optional) specify a groupID that you are not offically part yet
      * @returns Promise that resolves once the updates are applied
      */
-    public loadUpdates(): Promise<void>{
-        return this.nemLoader.loadAndProcessLatestTransactions(this);
+    public loadUpdates(groupID?: string): Promise<void>{
+        return this.nemLoader.loadAndProcessLatestTransactions(this,
+             groupID===undefined? undefined : this.loader.getAccountsToLoad(groupID), groupID);
     }
 
     /**
@@ -77,49 +81,58 @@ export class NemAPI {
     /**
      * Process a transaction (if relevant) with the given details
      */
-    public handleTransaction(sender: string, groupID: string, blockHeight: UInt64, type: string, payload: string) {
+    public handleTransaction(senderAcc: PublicAccount, groupID: string, deadline: LocalDateTime, type: string, payload: string) {
         let group = this.loader.getGroup(groupID);
-        if(group === null || group.blockHeight < blockHeight){
-            this.applyControlUpdate(this.loader, groupID, type, payload, sender);
+        if(group === null || group.deadline.isBefore(deadline)){
+            this.applyControlUpdate(groupID, type, payload, senderAcc);
+            group.deadline = deadline;
             this.loader.update();
         }
     }
 
-    private applyControlUpdate(loader: LoaderProvider, groupID: string, type: string, payload: string, sender: string) {
+    private applyControlUpdate(groupID: string, type: string, payload: string, senderAcc: PublicAccount) {
         switch (type) {
             case ControlMessageType.INVITE:
                 let invitationMessage: InviteMessage = JSON.parse(payload);
-                let group :Group = loader.groupStorageToGroup(invitationMessage.group);
+                let group :Group = this.loader.groupStorageToGroup(invitationMessage.group);
+                let accept = function(isGroup: boolean){
+                    if(isGroup){this.loader.addGroup(group)
+                    }else{this.loader.addFriend(group)}
+                    this.loader.registerNewAccountListener(groupID, senderAcc.publicKey);
+                }
                 this.presentConfirm("Do you want to accept "+invitationMessage.senderName+'\'s ' 
-                + (invitationMessage.isGroup? 'group ': 'friend ') +'invitation?', 
-                (invitationMessage.isGroup? function(){loader.addGroup(group)} : function(){loader.addFriend(group)} ));
+                + (invitationMessage.isGroup? 'group ': 'friend ') +'invitation?', accept);
                 break;
             case ControlMessageType.ANSWER:
                 let answerMessage: AnswerMessage = JSON.parse(payload);
                 if(answerMessage.accept){
-                    let receipients: string[] = Array.from(loader.getGroup(groupID).members.keys());
-                    this.nemTransaction.sendControlData(receipients, ControlMessageType.MEMBER, groupID, [answerMessage.username, sender]);
-                    loader.addMember(groupID, answerMessage.username, sender);
+                    let receipients: string[] = Array.from(this.loader.getGroup(groupID).members.keys());
+                    this.nemTransaction.sendControlData(receipients, ControlMessageType.MEMBER, groupID,
+                         [answerMessage.username, senderAcc.address.plain()]);
+                    this.loader.addMember(groupID, answerMessage.username, senderAcc.address.plain());
                 }
                 break;
             case ControlMessageType.MEMBER:
                 let memberMessage: MemberMessage = JSON.parse(payload);
-                loader.addMember(groupID, memberMessage.address, memberMessage.username);
+                this.loader.addMember(groupID, memberMessage.address, memberMessage.username);
+                if(memberMessage.address === this.account.getAdress()){
+                    this.loadUpdates(groupID);
+                }
                 break;
             case ControlMessageType.LEAVE:
                 let leaveMessage: LeaveMessage = JSON.parse(payload);
-                loader.removeMember(groupID, leaveMessage.address);
+                this.loader.removeMember(groupID, leaveMessage.address);
                 break;
             case ControlMessageType.TX:
-                let infoMessage: InfoMessage = JSON.parse(payload);
-                this.applyTransaction(groupID, loader, infoMessage)
+                let infoMessage: TxMessage = JSON.parse(payload);
+                this.applyTransaction(groupID, infoMessage)
             default:
                 break;
         }
     }
 
-    private applyTransaction(groupID, loader: LoaderProvider, infoMessage: InfoMessage){
-        let g: Group = loader.getGroup(groupID);
+    private applyTransaction(groupID, infoMessage: TxMessage){
+        let g: Group = this.loader.getGroup(groupID);
         let oldBalance = g.balances.get(infoMessage.sender);
         g.balances.set(infoMessage.sender, oldBalance + infoMessage.amount);
         for(let receipient of infoMessage.receipients){

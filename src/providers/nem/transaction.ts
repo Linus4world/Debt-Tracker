@@ -9,7 +9,7 @@ import { NemSettingsProvider } from './nemsettings';
 import { ToastController } from 'ionic-angular';
 import { NemMonitorProvider } from './monitor';
 import { ControlMessageType } from '../../models/enums';
-import { InviteMessage, AnswerMessage, MemberMessage, LeaveMessage, InfoMessage } from '../../models/control.model';
+import { InviteMessage, AnswerMessage, MemberMessage, LeaveMessage, TxMessage } from '../../models/control.model';
 
 
 @Injectable()
@@ -79,6 +79,9 @@ export class NemTransactionProvider {
       error => { console.error(error); this.monitor.presentToast("❌ Transaction failed!") });
   }
 
+  /**
+   * Encodes the message, with the params given by the nemAPI
+   */
   private prepareControlMessage(receipient: string, type: ControlMessageType,
      groupID: string, params: any[]): TransferTransaction {
     let payload: any;
@@ -105,12 +108,12 @@ export class NemTransactionProvider {
         break;
       case ControlMessageType.LEAVE:
         let leaveMessage: LeaveMessage = {
-          address: params[0]
+          address: this.account.getAdress()
         }
         payload = leaveMessage;
         break;
       case ControlMessageType.TX:
-        let infoMessage: InfoMessage = {
+        let infoMessage: TxMessage = {
           sender: params[0],
           receipients: params[1],
           amount: params[2],

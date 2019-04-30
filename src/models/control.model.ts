@@ -20,7 +20,7 @@ export interface LeaveMessage{
     address: string
 }
 
-export interface InfoMessage{
+export interface TxMessage{
     sender: string,
     receipients: string[],
     amount: number,

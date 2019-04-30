@@ -4,7 +4,6 @@ import { LoaderProvider } from '../../providers/loader/loader';
 import { AccountProvider } from '../../providers/account/account';
 import { CurrencyProvider } from '../../providers/currency/currency';
 import { Group } from '../../models/group.model';
-import { NemLoaderProvider } from '../../providers/nem/nemloader';
 import { NemAPI } from '../../providers/nem/nemapi';
 
 //declare function generate();
@@ -17,7 +16,7 @@ import { NemAPI } from '../../providers/nem/nemapi';
 export class HomePage {
   NAME: string = 'Unknown';
   CURRENCY: string;
-  group: Group = {id: "", name: "...", members: null, balances: null, blockHeight: null};
+  group: Group = {id: "", name: "...", members: null, balances: null, deadline: null};
 
   constructor(public navCtrl: NavController, public loader: LoaderProvider, 
     public account: AccountProvider,currency: CurrencyProvider, nemAPI: NemAPI) {
@@ -32,7 +31,7 @@ export class HomePage {
     b.set(this.account.getAdress(), 0);
     let m = new Map();
     m.set(this.account.getAdress(), this.account.getName());
-    this.group = {id:"", name: "Overall Balance", balances: b, members: m, blockHeight: null};
+    this.group = {id:"", name: "Overall Balance", balances: b, members: m, deadline: null};
 
     this.loader.overAllBalance$.subscribe((data: number) => {
       this.group.balances.set(this.account.getAdress(),data);

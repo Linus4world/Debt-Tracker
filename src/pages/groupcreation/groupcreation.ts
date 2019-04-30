@@ -4,6 +4,7 @@ import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
 import { UInt64 } from 'nem2-sdk';
 import { LoaderProvider } from '../../providers/loader/loader';
+import { LocalDateTime } from 'js-joda';
 
 @IonicPage()
 @Component({
@@ -56,7 +57,7 @@ export class GroupcreationPage {
         name: this.groupName,
         members: this.membersMap,
         balances: b,
-        blockHeight: UInt64.fromUint(0)
+        deadline: LocalDateTime.now()
       }
       console.log(group);
       this.loader.addGroup(group);
