@@ -2,9 +2,8 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
-import { UInt64 } from 'nem2-sdk';
-import { LoaderProvider } from '../../providers/loader/loader';
 import { LocalDateTime } from 'js-joda';
+import { NemAPI } from '../../providers/nem/nemapi';
 
 @IonicPage()
 @Component({
@@ -18,7 +17,7 @@ export class FriendcreationPage {
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams, 
-    public account: AccountProvider, private loader: LoaderProvider) {
+    public account: AccountProvider, private nemAPI: NemAPI) {
   }
 
   ionViewDidLoad() {
@@ -32,19 +31,17 @@ export class FriendcreationPage {
       let ID = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       let m = new Map<string,string>();
       m.set(this.account.getAdress(), this.account.getName());
-      m.set(this.address, 'Friend'+ID)
       let b = new Map<string,number>();
       b.set(this.account.getAdress(), 0);
-      b.set(this.address, 0);
       
       let f: Group = {
         id: ID,
-        name: m.get(this.address),
+        name: this.account.getName(),
         members: m,
         balances: b,
         deadline: LocalDateTime.now()
       }
-      this.loader.addFriend(f);
+      this.nemAPI.addFriend(this.address, f);
       this.navCtrl.pop();
     }else{
       console.log('NO!');

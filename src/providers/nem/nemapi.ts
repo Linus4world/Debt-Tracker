@@ -4,7 +4,7 @@ import { NemTransactionProvider } from "./transaction";
 import { ControlMessageType } from "../../models/enums";
 import { LoaderProvider } from "../loader/loader";
 import { NemLoaderProvider } from "./nemloader";
-import { AlertController } from "ionic-angular";
+import { AlertController, ToastController } from "ionic-angular";
 import { InviteMessage, AnswerMessage, MemberMessage, LeaveMessage, TxMessage } from "../../models/control.model";
 import { Transaction, PublicAccount } from "nem2-sdk";
 import { AccountProvider } from "../account/account";
@@ -13,7 +13,8 @@ import { LocalDateTime } from "js-joda";
 @Injectable()
 export class NemAPI {
     constructor(private nemTransaction: NemTransactionProvider, private loader: LoaderProvider,
-        private nemLoader: NemLoaderProvider, private alertCtrl: AlertController, private account: AccountProvider){
+        private nemLoader: NemLoaderProvider, private alertCtrl: AlertController, private account: AccountProvider,
+        private toastCtrl: ToastController){
 
     }
 
@@ -23,11 +24,13 @@ export class NemAPI {
     public addGroup(receipients: string[], group: Group){
         this.nemTransaction.sendControlData(receipients, ControlMessageType.INVITE, group.id, [this.loader.groupToGroupStorage(group), true]);
         this.loader.addGroup(group);
+        this.presentToast("Group "+ group.name + " created!");
     }
     /**
      * Sends an invitation to the given friend.
      */
     public addFriend(receipient: string, group: Group){
+        this.presentToast("⏳ Sending Invitation...");
         this.nemTransaction.sendControlData([receipient], ControlMessageType.INVITE, group.id, [this.loader.groupToGroupStorage(group), false]);
     }
     /**
@@ -35,6 +38,7 @@ export class NemAPI {
      */
     public addMember(member: string, group: Group){
         this.nemTransaction.sendControlData([member], ControlMessageType.INVITE, group.id, [this.loader.groupToGroupStorage(group), true]);
+        this.presentToast("⏳ Sending Invitation...");
     }
     /**
      * Sends the transaction details to all members of the group.
@@ -42,6 +46,7 @@ export class NemAPI {
      */
     public recordDebt(receipients: string[], group: Group, amount: number, purpose: string){
         this.nemTransaction.sendControlData(Array.from(group.members.keys()), ControlMessageType.TX, group.id, [this.account.getAdress(), receipients, amount, purpose])
+        this.presentToast("⏳ Announcing Debt...");
     }
     /**
      * Answers an invitation message, adds the group to the list and listens for new incomming
@@ -159,5 +164,18 @@ export class NemAPI {
         });
         alert.present();
       }
+
+        /**
+ * Presents the given toast message to the user for 1.5sec
+ * @param message : Message to be shown
+ */
+  private presentToast(message: string) {
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 1500,
+      position: 'top'
+    });
+    toast.present();
+  }
     
 }

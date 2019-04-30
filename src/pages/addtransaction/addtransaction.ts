@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Group } from '../../models/group.model';
-import { NemTransactionProvider } from '../../providers/nem/transaction';
 import { MemberSearch } from '../../models/membersearch.model';
 import { AccountProvider } from '../../providers/account/account';
 import { CurrencyProvider } from '../../providers/currency/currency';
+import { NemAPI } from '../../providers/nem/nemapi';
 
 @IonicPage()
 @Component({
@@ -22,8 +22,8 @@ export class AddtransactionPage {
   memberOK = true;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-     private nemTransaction: NemTransactionProvider, public currencyProvider: CurrencyProvider,
-    account: AccountProvider) {
+    public currencyProvider: CurrencyProvider,
+    account: AccountProvider, private nemAPI: NemAPI) {
     this.group = navParams.data;
     this.group.members.forEach((value, key, _) => {
       if(key !== account.getAdress()){
@@ -53,7 +53,7 @@ export class AddtransactionPage {
   }
 
   private createTransaction(){
-    this.nemTransaction.createTransAction(this.members, this.title, this.amount, this.group.id);
+    this.nemAPI.recordDebt(this.members, this.group, this.amount, this.title);
   }
 
 

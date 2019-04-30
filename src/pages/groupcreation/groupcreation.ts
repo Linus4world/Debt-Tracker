@@ -2,9 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Group } from '../../models/group.model';
 import { AccountProvider } from '../../providers/account/account';
-import { UInt64 } from 'nem2-sdk';
-import { LoaderProvider } from '../../providers/loader/loader';
 import { LocalDateTime } from 'js-joda';
+import { NemAPI } from '../../providers/nem/nemapi';
 
 @IonicPage()
 @Component({
@@ -21,7 +20,7 @@ export class GroupcreationPage {
   membersOK: boolean = true;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-    account: AccountProvider, private loader: LoaderProvider) {
+    private account: AccountProvider, private nemAPI: NemAPI) {
     this.members.push(account.getName());
     this.membersMap.set(account.getAdress(), account.getName());
     this.nameList = this.navParams.get("map");
@@ -46,24 +45,19 @@ export class GroupcreationPage {
   submit() {
     if (this.checkInput()) {
       let b = new Map<string, number>();
-      let k = this.membersMap.keys();
-      let i = k.next();
-      while (i.done === false) {
-        b.set(i.value, 0);
-        i = k.next();
-      }
+      b.set(this.account.getAdress(), 0);
+      let m = new Map<string, string>();
+      m.set(this.account.getAdress(), this.account.getName());
       let group: Group = {
         id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
         name: this.groupName,
-        members: this.membersMap,
+        members: m,
         balances: b,
         deadline: LocalDateTime.now()
       }
-      console.log(group);
-      this.loader.addGroup(group);
+      this.nemAPI.addGroup(Array.from(this.membersMap.keys()), group);
       this.navCtrl.pop();
     }
-
   }
 
 }

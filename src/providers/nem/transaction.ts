@@ -41,12 +41,14 @@ export class NemTransactionProvider {
   public sendControlData(receipients: string[], type: ControlMessageType, groupID: string, params: any[]) {
     if (receipients.length == 1) {
       let tx = this.prepareControlMessage(receipients[0], type, groupID, params);
+      console.log(tx);
       this.announceTransaction(this.acc, this.acc.sign(tx));
     } else {
       let txs: InnerTransaction[] = [];
       for (let receipient of receipients) {
         let tx = this.prepareControlMessage(receipient, type, groupID, params);
         txs.push(tx.toAggregate(this.acc.publicAccount));
+        console.log(tx);
         let aggregateTransaction = AggregateTransaction.createComplete(Deadline.create(), txs, this.nemSettings.networkType, []);
         this.announceTransaction(this.acc, this.acc.sign(aggregateTransaction));
       }

@@ -68,7 +68,7 @@ export class NemMonitorProvider {
                 .unconfirmedAdded(signerAddress)
                 .pipe(filter(transaction => (transaction.transactionInfo !== undefined
                     && transaction.transactionInfo.hash === signedTransaction.hash)))
-                .subscribe(ignored => console.log("⏳: Transaction status changed to unconfirmed"),
+                .subscribe(_ => console.log("⏳: Transaction status changed to unconfirmed"),
                     error => console.error(error));
             /**
              * Monitor when the transaction gets included in a block. 
