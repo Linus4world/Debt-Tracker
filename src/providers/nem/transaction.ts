@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   Account, Address, Deadline, PlainMessage,
-  TransferTransaction, TransactionHttp, AggregateTransaction, SignedTransaction, InnerTransaction
+  TransferTransaction, TransactionHttp, AggregateTransaction, SignedTransaction, InnerTransaction, Transaction
 } from 'nem2-sdk';
 import { AccountProvider } from '../account/account';
 import { NemSettingsProvider } from './nemsettings';
@@ -20,7 +20,6 @@ export class NemTransactionProvider {
   constructor(public http: HttpClient, public account: AccountProvider, public nemSettings: NemSettingsProvider,
     public toastCtrl: ToastController, public monitor: NemMonitorProvider) {
     console.log('Hello NemTransactionProvider Provider');
-    console.log(account.getPrivateKey());
     this.acc = Account.createFromPrivateKey(account.getPrivateKey(), this.nemSettings.networkType);
   }
 
@@ -39,19 +38,24 @@ export class NemTransactionProvider {
    * @param params 
    */
   public sendControlData(receipients: string[], type: ControlMessageType, groupID: string, params: any[]) {
+      let t: Transaction;
     if (receipients.length == 1) {
-      let tx = this.prepareControlMessage(receipients[0], type, groupID, params);
-      console.log(tx);
-      this.announceTransaction(this.acc, this.acc.sign(tx));
+      t = this.prepareControlMessage(receipients[0], type, groupID, params);
+      console.log(t);
     } else {
       let txs: InnerTransaction[] = [];
       for (let receipient of receipients) {
         let tx = this.prepareControlMessage(receipient, type, groupID, params);
         txs.push(tx.toAggregate(this.acc.publicAccount));
         console.log(tx);
-        let aggregateTransaction = AggregateTransaction.createComplete(Deadline.create(), txs, this.nemSettings.networkType, []);
-        this.announceTransaction(this.acc, this.acc.sign(aggregateTransaction));
+        t = AggregateTransaction.createComplete(Deadline.create(), txs, this.nemSettings.networkType, []);
       }
+    }
+    try{
+      this.announceTransaction(this.acc, this.acc.sign(t));
+    }catch(err){
+      console.log(err);
+      this.monitor.presentToast('❌ Invalid Address!')
     }
   }
 

@@ -3,7 +3,6 @@ import { HttpClient } from "@angular/common/http";
 import { AccountProvider } from "../account/account";
 import { NemMonitorProvider } from "./monitor";
 import { Transaction, TransferTransaction, AggregateTransaction, Address, AccountHttp, PublicAccount, QueryParams } from "nem2-sdk";
-import { AlertController } from "ionic-angular";
 import { NemAPI } from "./nemapi";
 import { NemSettingsProvider } from "./nemsettings";
 
@@ -12,7 +11,7 @@ export class NemLoaderProvider {
     private latestTransactions: Transaction[] = [];
 
     constructor(public http: HttpClient, public account: AccountProvider,
-        public monitor: NemMonitorProvider, private alertCtrl: AlertController,
+        public monitor: NemMonitorProvider,
         private nemSettings: NemSettingsProvider) {
         console.log("Hello REactorProvider")
     }

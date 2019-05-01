@@ -6,7 +6,7 @@ import { LoaderProvider } from "../loader/loader";
 import { NemLoaderProvider } from "./nemloader";
 import { AlertController, ToastController } from "ionic-angular";
 import { InviteMessage, AnswerMessage, MemberMessage, LeaveMessage, TxMessage } from "../../models/control.model";
-import { Transaction, PublicAccount } from "nem2-sdk";
+import { Transaction, PublicAccount, Account } from "nem2-sdk";
 import { AccountProvider } from "../account/account";
 import { LocalDateTime } from "js-joda";
 
@@ -56,6 +56,9 @@ export class NemAPI {
     public answerInvititation(receipient: string, group: Group, accept: boolean){
         this.nemTransaction.sendControlData([receipient], ControlMessageType.ANSWER, group.id, [accept]);
         this.loader.addGroup(group);
+        if(accept){
+            this.presentToast("⏳ Sending Confirmation...");
+        }
     }
     /**
      * Removes the given group from the list and sends a leave message to all members of the group
@@ -64,6 +67,7 @@ export class NemAPI {
         let receipients: string[] = Array.from(group.members.keys());
         this.nemTransaction.sendControlData(receipients, ControlMessageType.LEAVE, group.id, null);
         this.loader.removeGroup(group.id);
+        this.presentToast("⏳ Announcing leave....");
     }
 
     /**
