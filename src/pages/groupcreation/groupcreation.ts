@@ -14,25 +14,28 @@ export class GroupcreationPage {
   groupName: string = "";
   memberAddress: string = "";
   members: Array<string> = new Array<string>();
-  membersMap: Map<string, string> = new Map<string, string>();
   private nameList: Map<string, Group>;
   nameOK: boolean = true;
   membersOK: boolean = true;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-    private account: AccountProvider, private nemAPI: NemAPI) {
+    public account: AccountProvider, private nemAPI: NemAPI) {
     this.members.push(account.getName());
-    this.membersMap.set(account.getAdress(), account.getName());
     this.nameList = this.navParams.get("map");
   }
 
   addMember() {
     //TODO check address with nem and get name
-    if(this.memberAddress.length === 40){
-      let name = 'Member'+ Math.floor(Math.random()*100);
-      this.members.push(name);
-      this.membersMap.set(this.memberAddress, name);
+    if (this.memberAddress.length === 40 && this.members.indexOf(this.memberAddress, 0) === -1) {
+      this.members.push(this.memberAddress);
       this.memberAddress = '';
+    }
+  }
+
+  removeMember(member: string) {
+    const index = this.members.indexOf(member, 0);
+    if (index > -1) {
+      this.members.splice(index, 1);
     }
   }
 
@@ -55,7 +58,7 @@ export class GroupcreationPage {
         balances: b,
         deadline: LocalDateTime.now()
       }
-      this.nemAPI.addGroup(Array.from(this.membersMap.keys()), group);
+      this.nemAPI.addGroup(this.members, group);
       this.navCtrl.pop();
     }
   }

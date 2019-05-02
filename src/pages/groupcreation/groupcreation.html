@@ -17,9 +17,15 @@
   </ion-item>
 
   <ion-label style="font-size: 1.5em; margin-top: 4em">List of members</ion-label>
-  <ul>
+  <!-- <ul>
     <li *ngFor="let m of members" >{{m}}</li>
-  </ul>
+  </ul> -->
+  <ion-chip *ngFor="let m of members">
+    <button ion-button *ngIf="m !== account.getName()" (click)="removeMember(m)">
+      <ion-icon name="trash"></ion-icon>
+    </button>
+    <ion-label>{{m}}</ion-label>
+  </ion-chip>
 
  <ion-item>
   <ion-label floating color="{{memberAddress.length === 40? 'primary' : 'danger'}}">Address of member</ion-label>
