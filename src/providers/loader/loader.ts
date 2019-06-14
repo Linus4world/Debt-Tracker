@@ -7,6 +7,7 @@ import { AccountDetails } from '../../models/accountdetails.model';
 import { AccountProvider } from '../account/account';
 import { UInt64 } from 'nem2-sdk';
 import { GroupStorage } from '../../models/groupstorage';
+import { LocalDateTime } from 'js-joda';
 
 
 @Injectable()
@@ -30,10 +31,12 @@ export class LoaderProvider {
   private _overAllBalance = 0;
   private _groupSubscriber;
   private _observedGroup: Group;
+  private _accountListener: Map<string, string>;
 
   private readonly GROUPS_KEY = 'GROUPS';
   private readonly FIRENDS_KEY = 'FRIENDS';
   private readonly ACCOUNT_KEY = 'ACCOUNT';
+  private readonly ACCOUNT_LISTENER_KEY = 'ACCOUNT_LISTENER';
 
   public overAllBalance$: Observable<number>;
   public group_list$: Observable<Group[]>;
@@ -42,7 +45,7 @@ export class LoaderProvider {
   private _friends_list_observer;
 
   constructor(public http: HttpClient,
-    public storage: Storage, public account: AccountProvider) {
+    private storage: Storage, public account: AccountProvider) {
       console.log("Hello LoaderProvider")
   }
 
@@ -66,6 +69,9 @@ export class LoaderProvider {
           this._friends_list_observer = observer;
           observer.next(this._friends);
         });
+        let aL = this.storage.get(this.ACCOUNT_LISTENER_KEY).then((value) => {
+          this._accountListener = (value === undefined || value === null)? new Map<string,string>() : new Map<string,string>(value);
+        })
       }).then(() => console.log('Everything is loaded!'));
   }
 
@@ -209,6 +215,10 @@ export class LoaderProvider {
     return null;
   }
 
+  public getAccountsToLoad(groupID): string{
+    return this._accountListener.get(groupID);
+  }
+
   //LOADING
 
   private loadGroups() {
@@ -243,6 +253,10 @@ export class LoaderProvider {
 
 
   //STORING
+  public registerNewAccountListener(groupID: string, publicKey: string){
+    this._accountListener.set(groupID, publicKey);
+    this.storage.set(this.ACCOUNT_LISTENER_KEY, Array.from(this._accountListener.entries()));
+  }
 
   public saveAccount(account: AccountDetails) {
     this.saveObjects(this.ACCOUNT_KEY, account);
@@ -287,7 +301,7 @@ export class LoaderProvider {
     return (groupStorage === null) ? null : {
       id: groupStorage.id,
       name: groupStorage.name,
-      blockHeight: groupStorage.blockHeight,
+      deadline: LocalDateTime.parse(groupStorage.deadline),
       members: new Map(groupStorage.members),
       balances: new Map(groupStorage.balances)
     }
@@ -299,7 +313,7 @@ export class LoaderProvider {
       name: group.name,
       members: Array.from(group.members.entries()),
       balances: Array.from(group.balances.entries()),
-      blockHeight: group.blockHeight
+      deadline: group.deadline.toJSON()
     }
   }
 
@@ -322,7 +336,7 @@ export class LoaderProvider {
   private setupFriendsMock() {
     let m1: Map<string, string> = new Map<string, string>();
     let b1: Map<string, number> = new Map<string, number>();
-    let f1: Group = { id: "3", name: "Nicolas", members: m1, balances: b1, blockHeight: UInt64.fromUint(0) };
+    let f1: Group = { id: "3", name: "Nicolas", members: m1, balances: b1, deadline: LocalDateTime.now() };
 
     m1.set(this.account.getAdress(), this.account.getName());
     m1.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA5', 'Nicolas');
@@ -342,9 +356,9 @@ export class LoaderProvider {
     let b2: Map<string, number> = new Map<string, number>();
     let b3: Map<string, number> = new Map<string, number>();
     //Groups
-    let g1: Group = { id: "0", name: 'Trip', members: m1, balances: b1, blockHeight: UInt64.fromUint(0) };
-    let g2: Group = { id: "1", name: 'Birthday party', members: m2, balances: b2, blockHeight: UInt64.fromUint(0) };
-    let g3: Group = { id: "2", name: 'Poker Table', members: m3, balances: b3, blockHeight: UInt64.fromUint(0) };
+    let g1: Group = { id: "0", name: 'Trip', members: m1, balances: b1, deadline: LocalDateTime.now() };
+    let g2: Group = { id: "1", name: 'Birthday party', members: m2, balances: b2, deadline: LocalDateTime.now() };
+    let g3: Group = { id: "2", name: 'Poker Table', members: m3, balances: b3, deadline: LocalDateTime.now() };
 
     m1.set(this.account.getAdress(), this.account.getName());
     m1.set('TCVN45ZKHQGWVFVAKXX7LH3W6RWMGAL4FSPA5UA5', 'Julian');

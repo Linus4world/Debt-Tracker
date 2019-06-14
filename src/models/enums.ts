@@ -5,9 +5,9 @@ export enum Currency{
 }
 
 export enum ControlMessageType{
-    INVITE = 'INITE',
+    INVITE = 'INVITE',
     ANSWER = 'ANSWER',
     MEMBER = 'MEMBER',
     LEAVE = 'LEAVE',
-    INFO = 'INFO'
+    TX = 'TX'
 }
